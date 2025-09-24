@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Estudio } from '../../Estudio/estudio.model';
 import { FormapagamentoService } from '../formapagamento.service';
 import { Router } from '@angular/router';
 import { FormaPagamento } from '../formapagamento.model';

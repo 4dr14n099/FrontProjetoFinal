@@ -31,11 +31,9 @@ import { NavComponent } from './components/template/nav/nav.component';
 import { FormaPagamentoCrudComponent } from './views/forma-pagamento-crud/forma-pagamento-crud.component';
 import { ProdutoCrudComponent } from './views/produto-crud/produto-crud.component';
 import { ClienteCrudComponent } from './views/cliente-crud/cliente-crud.component';
-import { EstudioCrudComponent } from './views/estudio-crud/estudio-crud.component';
 import { FormaPagamentoCreateComponent } from './components/formaPagamento/forma-pagamento-create/forma-pagamento-create.component';
 import { ClienteCreateComponent } from './components/Cliente/cliente-create/cliente-create.component';
 import { ProdutoCreateComponent } from './components/Produto/produto-create/produto-create.component';
-import { EstudioCreateComponent } from './components/Estudio/estudio-create/estudio-create.component';
 import { MatOptionModule } from "@angular/material/core";
 import { ProdutoReadComponent } from './components/Produto/produto-read/produto-read.component';
 import { ClienteReadComponent } from './components/Cliente/cliente-read/cliente-read.component';
@@ -53,11 +51,9 @@ registerLocaleData(localePt)
     FormaPagamentoCrudComponent,
     ProdutoCrudComponent,
     ClienteCrudComponent,
-    EstudioCrudComponent,
     FormaPagamentoCreateComponent,
     ClienteCreateComponent,
     ProdutoCreateComponent,
-    EstudioCreateComponent,
     ProdutoReadComponent,
     ClienteReadComponent
   ],
