@@ -38,8 +38,7 @@ import { MatOptionModule } from "@angular/material/core";
 import { ProdutoReadComponent } from './components/Produto/produto-read/produto-read.component';
 import { ClienteReadComponent } from './components/Cliente/cliente-read/cliente-read.component';
 
-import { MatIconModule } from '@angular/material/icon';  // <--- ADICIONEI ESTE AQUI
-
+import { MatIconModule } from '@angular/material/icon';
 registerLocaleData(localePt)
 
 @NgModule({
