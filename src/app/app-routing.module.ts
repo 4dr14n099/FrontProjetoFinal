@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import {HomeComponent} from './views/home/home.component';
 import { FormaPagamentoCrudComponent } from './views/forma-pagamento-crud/forma-pagamento-crud.component';
 import { ProdutoCrudComponent } from './views/produto-crud/produto-crud.component';
 import { ClienteCrudComponent } from './views/cliente-crud/cliente-crud.component';
@@ -9,6 +10,10 @@ import { FormaPagamentoCreateComponent } from './components/formaPagamento/forma
 
 //configuração para rotear entre as paginas na home
 const routes: Routes = [
+  {
+    path: "",
+    component: HomeComponent
+  },
   {
     path: "fpagamentos",
     component: FormaPagamentoCrudComponent

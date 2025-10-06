@@ -40,6 +40,7 @@ import { ClienteReadComponent } from './components/Cliente/cliente-read/cliente-
 
 import { MatIconModule } from '@angular/material/icon';
 import { FormaPagamentoReadComponent } from './components/formaPagamento/forma-pagamento-read/forma-pagamento-read.component';
+import { HomeComponent } from './views/home/home.component';
 registerLocaleData(localePt)
 
 @NgModule({
@@ -56,7 +57,8 @@ registerLocaleData(localePt)
     ProdutoCreateComponent,
     ProdutoReadComponent,
     ClienteReadComponent,
-    FormaPagamentoReadComponent
+    FormaPagamentoReadComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
