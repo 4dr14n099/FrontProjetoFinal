@@ -1,0 +1,74 @@
+.mat-elevation-z4 {
+    margin: 16px;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #e3eaf8; /* azul claro de fundo */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  /* Cabeçalho da tabela */
+  th.mat-header-cell {
+    background-color: #94c2f7; /* azul claro */
+    color: #ffffff; /* texto branco */
+    font-weight: 600;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid #6ba1e5; /* borda azul mais escura */
+  }
+  
+  /* Células da tabela */
+  td.mat-cell {
+    padding: 12px 16px;
+    border-bottom: 1px solid #d1dae0;
+    color: #fffbfb; /* texto escuro para boa leitura */
+  }
+  
+  /* Ícones de ação */
+  a.edit mat-icon,
+  a.delete mat-icon {
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  a.edit mat-icon {
+    color: #1a73e8; /* azul forte */
+  }
+  
+  a.delete mat-icon {
+    color: #f44336; /* vermelho */
+    margin-left: 8px;
+  }
+  
+  a.edit mat-icon:hover {
+    color: #0c47a1; /* azul mais escuro no hover */
+  }
+  
+  a.delete mat-icon:hover {
+    color: #d32f2f; /* vermelho mais escuro no hover */
+  }
+  
+  /* Ícones de status (Ativo/Inativo) */
+  mat-icon[color="primary"] {
+    color: #1a73e8 !important;
+  }
+  
+  mat-icon[color="warn"] {
+    color: #f44336 !important;
+  }
+  
+  /* Responsivo para telas menores */
+  @media screen and (max-width: 768px) {
+    th.mat-header-cell,
+    td.mat-cell {
+      padding: 8px;
+      font-size: 14px;
+    }
+  }
+  
+  
