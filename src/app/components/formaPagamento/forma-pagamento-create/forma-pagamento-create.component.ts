@@ -33,7 +33,7 @@ export class FormaPagamentoCreateComponent implements OnInit {
   }
 
   cancel(): void {
-    this.router.navigate(['/formapagamento'])
+    this.router.navigate(['/fpagamentos'])
   }  
 
 }

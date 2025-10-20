@@ -33,6 +33,6 @@ export class ClienteCreateComponent implements OnInit {
   }
 
   cancel(): void {
-    this.router.navigate(['/cliente'])
+    this.router.navigate(['/fcliente'])
   }  
 }
