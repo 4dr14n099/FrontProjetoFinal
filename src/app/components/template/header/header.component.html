@@ -1,6 +1,9 @@
 <mat-toolbar class="header" met-elevation-z4>
+    <button mat-icon-button class="menu-button" (click)="toggleMenu()" aria-label="Menu">
+      <i class="material-icons">menu</i>
+    </button>
     <span class="title-group">
-      <a>
+      <a routerLink="/">
         <i class="material-icons">
           handyman
         </i>
@@ -8,8 +11,4 @@
       </a>
     </span>
   </mat-toolbar>
-  
-  <div class="content">
-    <router-outlet></router-outlet> <!-- ou seu conteúdo aqui -->
-  </div>
   

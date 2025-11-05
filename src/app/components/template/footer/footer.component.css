@@ -3,12 +3,33 @@
     position: fixed;
     /*coloca toolbar na parte de baixa */
     bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
     display: flex;
     /*coloca no final da linha. sendo no lado direiro parte inferior*/
     justify-content: flex-end;
+    align-items: center;
+    padding: 0 16px;
+    height: 64px;
+    background: rgba(10, 10, 10, 0.8) !important;
+    backdrop-filter: blur(20px) !important;
+    border-top: 1px solid rgba(0, 255, 255, 0.2) !important;
+    box-shadow: 
+        0 -4px 20px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(0, 255, 255, 0.1) !important;
 }
 
 .footer > span{
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 300;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.footer > span::before {
+    content: '⚡';
+    margin-right: 8px;
+    filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.5));
 }

@@ -1,56 +1,11 @@
 .mat-elevation-z4 {
   margin: 16px;
   padding: 16px;
-  border-radius: 8px;
-  background-color: #e3eaf8; /* mantém branco para a área da tabela */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border-radius: 20px;
+  overflow-x: auto;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-}
-
-/* Cabeçalho com fundo azul claro e texto branco */
-th.mat-header-cell {
-  background-color: #94c2f7;
-  color: #ffffff;
-  font-weight: 600;
-  text-align: left;
-  padding: 12px 16px;
-  border-bottom: 1px solid #6ba1e5; /* azul um pouco mais escuro para borda */
-}
-
-/* Células com texto escuro para boa leitura */
-td.mat-cell {
-  padding: 12px 16px;
-  border-bottom: 1px solid #d1dae0;
-  color: #fff9f9;
-}
-
-/* Ícones das ações com azul e vermelho, mantendo o padrão */
-a.edit mat-icon,
-a.delete mat-icon {
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-/* Ícone de editar: azul escuro */
-a.edit mat-icon {
-  color: #1a73e8; /* um azul forte */
-}
-
-/* Ícone de deletar: vermelho */
-a.delete mat-icon {
-  color: #f44336;
-  margin-left: 8px;
-}
-
-/* Hover nos ícones */
-a.edit mat-icon:hover {
-  color: #0c47a1;
-}
-
-a.delete mat-icon:hover {
-  color: #d32f2f;
 }

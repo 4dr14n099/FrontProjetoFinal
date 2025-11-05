@@ -1,11 +1,13 @@
 button {
     margin-bottom: 30px;
-}
-.custom-button {
-  background-color: #94c2f7; /* verde */
-  color: white; /* cor do texto */
+    margin-top: 0;
 }
 
-.custom-button:hover {
-  background-color: #1c1d1a; /* tom mais escuro ao passar o mouse */
+.custom-button {
+    background: linear-gradient(135deg, #00ffff, #00bfff) !important;
+    color: #0a0a0a !important;
+    border: none !important;
+    font-weight: 600 !important;
+    position: relative;
+    z-index: 1;
 }
