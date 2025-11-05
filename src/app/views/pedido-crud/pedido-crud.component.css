@@ -1,0 +1,14 @@
+button {
+    margin-bottom: 30px;
+    margin-top: 0;
+}
+
+.custom-button {
+    background: linear-gradient(135deg, #00ffff, #00bfff) !important;
+    color: #0a0a0a !important;
+    border: none !important;
+    font-weight: 600 !important;
+    position: relative;
+    z-index: 1;
+}
+

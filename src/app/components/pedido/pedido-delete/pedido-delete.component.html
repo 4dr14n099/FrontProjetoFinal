@@ -1,0 +1,25 @@
+<mat-card>
+  <mat-card-title>Excluir Pedido</mat-card-title>
+
+  <div style="margin-top: 16px;">
+    <p>Tem certeza que deseja excluir o pedido abaixo?</p>
+
+    <div style="margin-top: 24px;">
+      <p><strong>ID:</strong> {{ pedido.pedId }}</p>
+      <p><strong>Cliente:</strong> {{ pedido.cliente?.cliNome }}</p>
+      <p><strong>Data do Pedido:</strong> {{ pedido.pedData | date: 'dd/MM/yyyy' }}</p>
+      <p><strong>Valor Total:</strong> {{ pedido.pedValorTotal | currency: 'BRL' }}</p>
+      <p><strong>Status:</strong> {{ pedido.pedStatus || 'Pendente' }}</p>
+    </div>
+  </div>
+
+  <div style="margin-top: 24px;">
+    <button mat-raised-button color="warn" (click)="deletePedido()">
+      Excluir
+    </button>
+    <button mat-raised-button type="button" (click)="cancel()" style="margin-left: 8px;">
+      Cancelar
+    </button>
+  </div>
+
+</mat-card>

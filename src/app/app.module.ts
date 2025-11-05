@@ -47,6 +47,11 @@ import { FormaPagamentoUpdateComponent } from './components/formaPagamento/forma
 import { FormaPagamentoDeleteComponent } from './components/formaPagamento/forma-pagamento-delete/forma-pagamento-delete.component';
 import { ProdutoUpdateComponent } from './components/Produto/produto-update/produto-update.component';
 import { ProdutoDeleteComponent } from './components/Produto/produto-delete/produto-delete.component';
+import { PedidoCreateComponent } from './components/pedido/pedido-create/pedido-create.component';
+import { PedidoReadComponent } from './components/pedido/pedido-read/pedido-read.component';
+import { PedidoUpdateComponent } from './components/pedido/pedido-update/pedido-update.component';
+import { PedidoDeleteComponent } from './components/pedido/pedido-delete/pedido-delete.component';
+import { PedidoCrudComponent } from './views/pedido-crud/pedido-crud.component';
 
 registerLocaleData(localePt)
 
@@ -71,7 +76,12 @@ registerLocaleData(localePt)
     FormaPagamentoUpdateComponent,
     FormaPagamentoDeleteComponent,
     ProdutoUpdateComponent,
-    ProdutoDeleteComponent
+    ProdutoDeleteComponent,
+    PedidoCreateComponent,
+    PedidoReadComponent,
+    PedidoUpdateComponent,
+    PedidoDeleteComponent,
+    PedidoCrudComponent
   ],
   imports: [
     BrowserModule,

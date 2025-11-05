@@ -13,6 +13,9 @@ import { ProdutoDeleteComponent } from './components/Produto/produto-delete/prod
 import { FormaPagamentoCreateComponent } from './components/formaPagamento/forma-pagamento-create/forma-pagamento-create.component';
 import { FormaPagamentoUpdateComponent } from './components/formaPagamento/forma-pagamento-update/forma-pagamento-update.component';
 import { FormaPagamentoDeleteComponent } from './components/formaPagamento/forma-pagamento-delete/forma-pagamento-delete.component';
+import { PedidoCrudComponent } from './views/pedido-crud/pedido-crud.component';
+import { PedidoCreateComponent } from './components/pedido/pedido-create/pedido-create.component';
+import { PedidoDeleteComponent } from './components/pedido/pedido-delete/pedido-delete.component';
 
 //configuração para rotear entre as paginas na home
 const routes: Routes = [
@@ -67,6 +70,18 @@ const routes: Routes = [
    {
     path: "fcliente/delete/:cliId",
     component: ClienteDeleteComponent
+  },
+  {
+    path: "fpedido",
+    component: PedidoCrudComponent
+  },
+  {
+    path: "fpedido/create",
+    component: PedidoCreateComponent
+  },
+  {
+    path: "fpedido/delete/:pedId",
+    component: PedidoDeleteComponent
   },
 
 ];

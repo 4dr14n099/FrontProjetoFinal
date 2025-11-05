@@ -1,0 +1,59 @@
+<mat-card>
+  <mat-card-title>Editar Pedido</mat-card-title>
+
+  <form (ngSubmit)="updatePedido()" #pedidoForm="ngForm">
+    <div class="form-container">
+
+      <!-- Cliente -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Cliente</mat-label>
+        <mat-select [(ngModel)]="pedido.cliente" name="cliente" required>
+          <mat-option *ngFor="let cliente of clientes" [value]="cliente">
+            {{ cliente.cliNome }} - {{ cliente.cliCpf }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Data do Pedido -->
+      <mat-form-field appearance="fill">
+        <mat-label>Data do Pedido</mat-label>
+        <input matInput type="date" [(ngModel)]="pedido.pedData" name="pedData" required />
+      </mat-form-field>
+
+      <!-- Valor Total -->
+      <mat-form-field appearance="fill">
+        <mat-label>Valor Total</mat-label>
+        <input matInput type="number" step="0.01" [(ngModel)]="pedido.pedValorTotal" name="pedValorTotal" required min="0" />
+      </mat-form-field>
+
+      <!-- Status -->
+      <mat-form-field appearance="fill">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="pedido.pedStatus" name="pedStatus" required>
+          <mat-option value="Pendente">Pendente</mat-option>
+          <mat-option value="Confirmado">Confirmado</mat-option>
+          <mat-option value="Cancelado">Cancelado</mat-option>
+          <mat-option value="Entregue">Entregue</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Observações -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Observações</mat-label>
+        <textarea matInput [(ngModel)]="pedido.pedObservacoes" name="pedObservacoes" rows="3"></textarea>
+      </mat-form-field>
+
+    </div>
+
+    <!-- Botões -->
+    <div style="margin-top: 16px;">
+      <button mat-raised-button color="primary" type="submit" [disabled]="pedidoForm.invalid">
+        Salvar
+      </button>
+      <button mat-raised-button type="button" (click)="cancel()" style="margin-left: 8px;">
+        Cancelar
+      </button>
+    </div>
+
+  </form>
+</mat-card>
