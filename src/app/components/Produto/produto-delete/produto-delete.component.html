@@ -1,0 +1,22 @@
+<mat-card>
+  <mat-card-title>Excluir Produto</mat-card-title>
+
+  <mat-card-content>
+    <p>Tem certeza que deseja excluir o produto abaixo?</p>
+    
+    <div style="margin: 20px 0;">
+      <p><strong>Nome:</strong> {{ produto.proNome }}</p>
+      <p *ngIf="produto.proDescricao"><strong>Descrição:</strong> {{ produto.proDescricao }}</p>
+      <p *ngIf="produto.proPrecoVenda"><strong>Preço de Venda:</strong> {{ produto.proPrecoVenda | currency: 'BRL' }}</p>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-raised-button color="warn" (click)="deleteProduto()">
+      Excluir
+    </button>
+    <button mat-raised-button (click)="cancel()" style="margin-left: 8px;">
+      Cancelar
+    </button>
+  </mat-card-actions>
+</mat-card>

@@ -1,0 +1,22 @@
+<mat-card>
+  <mat-card-title>Excluir Cliente</mat-card-title>
+
+  <mat-card-content>
+    <p>Tem certeza que deseja excluir o cliente abaixo?</p>
+    
+    <div style="margin: 20px 0;">
+      <p><strong>Nome:</strong> {{ cliente.cliNome }}</p>
+      <p><strong>CPF:</strong> {{ cliente.cliCpf }}</p>
+      <p *ngIf="cliente.cliRg"><strong>RG:</strong> {{ cliente.cliRg }}</p>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-raised-button color="warn" (click)="deleteCliente()">
+      Excluir
+    </button>
+    <button mat-raised-button (click)="cancel()" style="margin-left: 8px;">
+      Cancelar
+    </button>
+  </mat-card-actions>
+</mat-card>

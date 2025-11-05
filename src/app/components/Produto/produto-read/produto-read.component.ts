@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Produto } from '../produto.module';
 import { ProdutoService } from '../produto.service';
 
@@ -7,7 +7,7 @@ import { ProdutoService } from '../produto.service';
   templateUrl: './produto-read.component.html',
   styleUrls: ['./produto-read.component.css']
 })
-export class ProdutoReadComponent {
+export class ProdutoReadComponent implements OnInit {
   products!: Produto[]
   displayedColumns = ['proId', 'proNome', 'proPrecoCusto', 'proPrecoVenda', 'action']
 

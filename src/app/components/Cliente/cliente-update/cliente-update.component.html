@@ -1,0 +1,76 @@
+<mat-card>
+  <mat-card-title>Editar Cliente</mat-card-title>
+
+  <form (ngSubmit)="updateCliente()" #clienteForm="ngForm">
+
+    <div class="form-container">
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Nome</mat-label>
+        <input matInput [(ngModel)]="cliente.cliNome" name="cliNome" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>CPF</mat-label>
+        <input matInput [(ngModel)]="cliente.cliCpf" name="cliCpf" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>RG</mat-label>
+        <input matInput [(ngModel)]="cliente.cliRg" name="cliRg" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Data de Nascimento</mat-label>
+        <input matInput type="date" [(ngModel)]="cliente.cliDataNascimento" name="cliDataNascimento" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Sexo</mat-label>
+        <mat-select [(ngModel)]="cliente.cliSexo" name="cliSexo" required>
+          <mat-option value="Masculino">Masculino</mat-option>
+          <mat-option value="Feminino">Feminino</mat-option>
+          <mat-option value="Outro">Outro</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Data de Cadastro</mat-label>
+        <input matInput type="date" [(ngModel)]="cliente.cliDataCadastro" name="cliDataCadastro" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Observações</mat-label>
+        <textarea matInput [(ngModel)]="cliente.cliObservacoes" name="cliObservacoes"></textarea>
+      </mat-form-field>
+
+      <mat-checkbox [(ngModel)]="cliente.cliAtivo" name="cliAtivo">Ativo</mat-checkbox>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Endereço do Proprietário </mat-label>
+        <input matInput [(ngModel)]="cliente.endProprietario" name="endProprietario" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Endereços </mat-label>
+        <textarea matInput [(ngModel)]="cliente.enderecos" name="enderecos"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Contatos </mat-label>
+        <textarea matInput [(ngModel)]="cliente.contatos" name="contatos"></textarea>
+      </mat-form-field>
+
+    </div>
+
+    <div style="margin-top: 16px;">
+      <button mat-raised-button color="primary" type="submit" [disabled]="clienteForm.invalid">
+        Atualizar
+      </button>
+      <button mat-raised-button type="button" (click)="cancel()" style="margin-left: 8px;">
+        Cancelar
+      </button>
+    </div>
+
+  </form>
+</mat-card>

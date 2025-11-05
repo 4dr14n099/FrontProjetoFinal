@@ -1,0 +1,13 @@
+mat-card {
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+mat-card-content {
+  padding: 20px;
+}
+
+mat-card-actions {
+  padding: 16px;
+}
+

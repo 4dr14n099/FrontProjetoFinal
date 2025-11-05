@@ -1,0 +1,63 @@
+<mat-card>
+  <mat-card-title>Editar Forma de Pagamento</mat-card-title>
+
+  <form (ngSubmit)="updateFormaPagamento()" #formaPagamentoForm="ngForm">
+    <div class="form-container">
+
+      <!-- Descrição -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Descrição</mat-label>
+        <input matInput [(ngModel)]="formapagamento.formDescricao" name="formDescricao" required />
+      </mat-form-field>
+
+      <!-- Tipo -->
+      <mat-form-field appearance="fill">
+        <mat-label>Tipo</mat-label>
+        <mat-select [(ngModel)]="formapagamento.formTipo" name="formTipo" required>
+          <mat-option value="Crédito">Crédito</mat-option>
+          <mat-option value="Débito">Débito</mat-option>
+          <mat-option value="Pix">Pix</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Campos visíveis apenas se tipo for "Crédito" -->
+      <ng-container *ngIf="formapagamento.formTipo === 'Crédito'">
+        <mat-form-field appearance="fill">
+          <mat-label>Número de Parcelas</mat-label>
+          <input matInput type="number" [(ngModel)]="formapagamento.formNumeroParcelas" name="formNumeroParcelas" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Dias entre Parcelas</mat-label>
+          <input matInput type="number" [(ngModel)]="formapagamento.formDiasEntreParcelas" name="formDiasEntreParcelas" />
+        </mat-form-field>
+      </ng-container>
+
+      <!-- Taxa Percentual -->
+      <mat-form-field appearance="fill">
+        <mat-label>Taxa (%)</mat-label>
+        <input matInput type="number" step="0.01" [(ngModel)]="formapagamento.formTaxaPercentual" name="formTaxaPercentual" />
+      </mat-form-field>
+
+      <!-- Permite Troco -->
+      <mat-checkbox [(ngModel)]="formapagamento.formPermiteTroco" name="formPermiteTroco">
+        Permite Troco
+      </mat-checkbox>
+
+      <!-- Ativo -->
+      <mat-checkbox [(ngModel)]="formapagamento.formAtivo" name="formAtivo">
+        Ativo
+      </mat-checkbox>
+
+    </div>
+
+    <div style="margin-top: 16px;">
+      <button mat-raised-button color="primary" type="submit" [disabled]="formaPagamentoForm.invalid">
+        Atualizar
+      </button>
+      <button mat-raised-button type="button" (click)="cancel()" style="margin-left: 8px;">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</mat-card>

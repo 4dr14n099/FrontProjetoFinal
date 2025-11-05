@@ -1,0 +1,114 @@
+<mat-card>
+  <mat-card-title>Editar Produto</mat-card-title>
+
+  <form (ngSubmit)="updateProduto()" #produtoForm="ngForm">
+    <!-- Nome (obrigatório) -->
+    <mat-form-field appearance="fill">
+      <mat-label>Nome</mat-label>
+      <input matInput [(ngModel)]="produto.proNome" name="proNome" required />
+    </mat-form-field>
+
+    <!-- Descrição -->
+    <mat-form-field appearance="fill">
+      <mat-label>Descrição</mat-label>
+      <textarea matInput [(ngModel)]="produto.proDescricao" name="proDescricao"></textarea>
+    </mat-form-field>
+
+    <!-- Código de Barras -->
+    <mat-form-field appearance="fill">
+      <mat-label>Código de Barras</mat-label>
+      <input matInput [(ngModel)]="produto.proCodigoBarras" name="proCodigoBarras" />
+    </mat-form-field>
+
+    <!-- Referência -->
+    <mat-form-field appearance="fill">
+      <mat-label>Referência</mat-label>
+      <input matInput [(ngModel)]="produto.proReferencia" name="proReferencia" />
+    </mat-form-field>
+
+    <!-- Unidade de Medida -->
+    <mat-form-field appearance="fill">
+      <mat-label>Unidade de Medida</mat-label>
+      <input matInput [(ngModel)]="produto.proUnidadeMedida" name="proUnidadeMedida" />
+    </mat-form-field>
+
+    <!-- Marca -->
+    <mat-form-field appearance="fill">
+      <mat-label>Marca</mat-label>
+      <input matInput [(ngModel)]="produto.proMarca" name="proMarca" />
+    </mat-form-field>
+
+    <!-- Categoria -->
+    <mat-form-field appearance="fill">
+      <mat-label>Categoria</mat-label>
+      <input matInput [(ngModel)]="produto.proCategoria" name="proCategoria" />
+    </mat-form-field>
+
+    <!-- Preço de Custo -->
+    <mat-form-field appearance="fill">
+      <mat-label>Preço de Custo (R$)</mat-label>
+      <input matInput type="number" [(ngModel)]="produto.proPrecoCusto" name="proPrecoCusto" />
+    </mat-form-field>
+
+    <!-- Preço de Venda -->
+    <mat-form-field appearance="fill">
+      <mat-label>Preço de Venda (R$)</mat-label>
+      <input matInput type="number" [(ngModel)]="produto.proPrecoVenda" name="proPrecoVenda" />
+    </mat-form-field>
+
+    <!-- Estoque Atual -->
+    <mat-form-field appearance="fill">
+      <mat-label>Estoque Atual</mat-label>
+      <input matInput type="number" [(ngModel)]="produto.proEstoqueAtual" name="proEstoqueAtual" />
+    </mat-form-field>
+
+    <!-- Estoque Mínimo -->
+    <mat-form-field appearance="fill">
+      <mat-label>Estoque Mínimo</mat-label>
+      <input matInput type="number" [(ngModel)]="produto.proEstoqueMinimo" name="proEstoqueMinimo" />
+    </mat-form-field>
+
+    <!-- Estoque Máximo -->
+    <mat-form-field appearance="fill">
+      <mat-label>Estoque Máximo</mat-label>
+      <input matInput type="number" [(ngModel)]="produto.proEstoqueMaximo" name="proEstoqueMaximo" />
+    </mat-form-field>
+
+    <!-- Localização -->
+    <mat-form-field appearance="fill">
+      <mat-label>Localização</mat-label>
+      <input matInput [(ngModel)]="produto.proLocalizacao" name="proLocalizacao" />
+    </mat-form-field>
+
+    <!-- Data de Validade -->
+    <mat-form-field appearance="fill">
+      <mat-label>Data de Validade</mat-label>
+      <input matInput type="date" [(ngModel)]="produto.proDataValidade" name="proDataValidade" />
+    </mat-form-field>
+
+    <!-- Data de Cadastro -->
+    <mat-form-field appearance="fill">
+      <mat-label>Data de Cadastro</mat-label>
+      <input matInput type="date" [(ngModel)]="produto.proDataCadastro" name="proDataCadastro" />
+    </mat-form-field>
+
+    <!-- Observações -->
+    <mat-form-field appearance="fill">
+      <mat-label>Observações</mat-label>
+      <textarea matInput [(ngModel)]="produto.proObservacoes" name="proObservacoes"></textarea>
+    </mat-form-field>
+
+    <!-- Produto Ativo -->
+    <mat-checkbox [(ngModel)]="produto.proAtivo" name="proAtivo">Ativo</mat-checkbox>
+
+    <!-- Botões -->
+    <div style="margin-top: 16px;">
+      <button mat-raised-button color="primary" type="submit" [disabled]="produtoForm.invalid">
+        Atualizar
+      </button>
+      <button mat-raised-button type="button" (click)="cancel()" style="margin-left: 8px;">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</mat-card>

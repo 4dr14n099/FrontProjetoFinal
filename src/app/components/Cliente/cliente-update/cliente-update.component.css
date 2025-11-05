@@ -1,0 +1,17 @@
+.form-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  mat-form-field {
+    flex: 1 1 300px; /* Faz os campos ficarem lado a lado em telas maiores */
+  }
+  
+  .full-width {
+    flex: 1 1 100%;
+    .content {
+  padding-top: 64px; /* para "empurrar" o conteúdo pra baixo do header fixo */
+}
+  }
+

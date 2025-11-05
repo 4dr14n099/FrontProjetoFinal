@@ -41,9 +41,12 @@ import { ClienteReadComponent } from './components/Cliente/cliente-read/cliente-
 import { MatIconModule } from '@angular/material/icon';
 import { FormaPagamentoReadComponent } from './components/formaPagamento/forma-pagamento-read/forma-pagamento-read.component';
 import { HomeComponent } from './views/home/home.component';
-import { PedidoCreateComponent } from './components/pedido/pedido-create/pedido-create.component';
-import { PedidoReadComponent } from './components/pedido/pedido-read/pedido-read.component';
-import { PedidoCrudComponent } from './views/pedido-crud/pedido-crud.component';
+import { ClienteUpdateComponent } from './components/Cliente/cliente-update/cliente-update.component';
+import { ClienteDeleteComponent } from './components/Cliente/cliente-delete/cliente-delete.component';
+import { FormaPagamentoUpdateComponent } from './components/formaPagamento/forma-pagamento-update/forma-pagamento-update.component';
+import { FormaPagamentoDeleteComponent } from './components/formaPagamento/forma-pagamento-delete/forma-pagamento-delete.component';
+import { ProdutoUpdateComponent } from './components/Produto/produto-update/produto-update.component';
+import { ProdutoDeleteComponent } from './components/Produto/produto-delete/produto-delete.component';
 
 registerLocaleData(localePt)
 
@@ -63,9 +66,12 @@ registerLocaleData(localePt)
     ClienteReadComponent,
     FormaPagamentoReadComponent,
     HomeComponent,
-    PedidoCreateComponent,
-    PedidoReadComponent,
-    PedidoCrudComponent
+    ClienteUpdateComponent,
+    ClienteDeleteComponent,
+    FormaPagamentoUpdateComponent,
+    FormaPagamentoDeleteComponent,
+    ProdutoUpdateComponent,
+    ProdutoDeleteComponent
   ],
   imports: [
     BrowserModule,
