@@ -7,6 +7,43 @@
         </p>
         <div class="divider"></div>
         
+        <!-- Gráfico de Estatísticas -->
+        <div class="stats-container" *ngIf="!carregando">
+            <h2 class="stats-title">Estatísticas do Sistema</h2>
+            <div class="chart-container">
+                <div class="chart-item">
+                    <div class="chart-label">
+                        <span class="chart-icon">👥</span>
+                        <span class="chart-text">Clientes Cadastrados</span>
+                        <span class="chart-value">{{ totalClientes }}</span>
+                    </div>
+                    <div class="chart-bar-wrapper">
+                        <div class="chart-bar chart-bar-clientes" [style.width.%]="getPorcentagemCliente()">
+                            <span class="bar-label">{{ totalClientes }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-item">
+                    <div class="chart-label">
+                        <span class="chart-icon">🛒</span>
+                        <span class="chart-text">Pedidos Realizados</span>
+                        <span class="chart-value">{{ totalPedidos }}</span>
+                    </div>
+                    <div class="chart-bar-wrapper">
+                        <div class="chart-bar chart-bar-pedidos" [style.width.%]="getPorcentagemPedido()">
+                            <span class="bar-label">{{ totalPedidos }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-loading" *ngIf="carregando">
+            <div class="loading-spinner"></div>
+            <p>Carregando estatísticas...</p>
+        </div>
+        
         <div class="modules-grid">
             <a routerLink="/fcliente" class="module-card">
                 <div class="module-icon-wrapper">

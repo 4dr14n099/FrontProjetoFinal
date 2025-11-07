@@ -10,8 +10,22 @@
   
   .full-width {
     flex: 1 1 100%;
-    .content {
-  padding-top: 64px; /* para "empurrar" o conteúdo pra baixo do header fixo */
-}
+  }
+  
+  .content {
+    padding-top: 64px; /* para "empurrar" o conteúdo pra baixo do header fixo */
+  }
+
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 

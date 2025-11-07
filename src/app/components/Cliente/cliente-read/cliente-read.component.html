@@ -16,7 +16,7 @@
     <!-- CPF -->
     <ng-container matColumnDef="cliCpf">
       <th mat-header-cell *matHeaderCellDef>CPF</th>
-      <td mat-cell *matCellDef="let row">{{ row.cliCpf }}</td>
+      <td mat-cell *matCellDef="let row">{{ formatarCPF(row.cliCpf) }}</td>
     </ng-container>
 
     <!-- RG -->
@@ -29,8 +29,9 @@
     <ng-container matColumnDef="cliAtivo">
       <th mat-header-cell *matHeaderCellDef>ATIVO</th>
       <td mat-cell *matCellDef="let row">
-        <mat-icon *ngIf="isAtivo(row.cliAtivo)" color="primary">check_circle</mat-icon>
-        <mat-icon *ngIf="!isAtivo(row.cliAtivo)" color="warn">cancel</mat-icon>
+        <!-- Backend retorna como String, então verificamos string 'true' (minúscula) ou boolean true -->
+        <mat-icon *ngIf="isAtivoCliente(row.cliAtivo)" color="primary">check_circle</mat-icon>
+        <mat-icon *ngIf="!isAtivoCliente(row.cliAtivo)" color="warn">cancel</mat-icon>
       </td>
     </ng-container>
 

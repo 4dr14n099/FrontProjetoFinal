@@ -411,11 +411,14 @@ export class ClienteCreateComponent implements OnInit {
     const enderecoCompleto = this.montarEnderecoCompleto();
 
     // Salvar CPF apenas com números e data no formato do backend
+    // Backend espera cliAtivo como String ("true" ou "false"), não boolean
+    const cliAtivoValue = this.cliente.cliAtivo === true || this.cliente.cliAtivo === 'true' || this.cliente.cliAtivo === 'TRUE';
     const clienteParaEnviar = {
       ...this.cliente,
       cliCpf: cpfLimpo,
       cliDataNascimento: dataNascimentoBackend,
-      endProprietario: enderecoCompleto
+      endProprietario: enderecoCompleto,
+      cliAtivo: cliAtivoValue ? 'true' : 'false' // Backend espera String
     };
 
     this.clienteService.create(clienteParaEnviar).subscribe(() => {

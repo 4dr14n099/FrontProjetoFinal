@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Cliente } from '../cliente.model';
 import { ClienteService } from '../cliente.service';
 import { Router, ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-cliente-update',
@@ -20,11 +21,26 @@ export class ClienteUpdateComponent implements OnInit {
   cpfError: string = '';
   enderecoError: string = '';
   dataNascimentoError: string = '';
+  cepError: string = '';
+
+  // Dados do endereço
+  cep: string = '';
+  endereco: any = {
+    logradouro: '',
+    bairro: '',
+    cidade: '',
+    uf: '',
+    numero: ''
+  };
+
+  buscandoCEP: boolean = false;
+  ultimoCepBuscado: string = '';
 
   constructor(
     private clienteService: ClienteService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private http: HttpClient
   ) { }
   
   ngOnInit(): void {
@@ -40,6 +56,12 @@ export class ClienteUpdateComponent implements OnInit {
         if (this.cliente.cliDataNascimento && this.cliente.cliDataNascimento.includes('-')) {
           this.cliente.cliDataNascimento = this.converterDataDoBackend(this.cliente.cliDataNascimento);
         }
+        // Normalizar cliAtivo: backend retorna como String, converter para boolean para o checkbox
+        if (typeof this.cliente.cliAtivo === 'string') {
+          this.cliente.cliAtivo = this.cliente.cliAtivo.toLowerCase() === 'true';
+        }
+        // Extrair dados do endereço do campo endProprietario se existir
+        this.extrairEnderecoDoCliente();
       });
     }
   }
@@ -188,27 +210,181 @@ export class ClienteUpdateComponent implements OnInit {
     this.dataNascimentoError = '';
   }
 
+  // Extrai dados do endereço do campo endProprietario (formato: "Logradouro, Nº numero, Bairro, Cidade, UF, CEP: 00000-000")
+  extrairEnderecoDoCliente(): void {
+    if (this.cliente.endProprietario && typeof this.cliente.endProprietario === 'string') {
+      const enderecoCompleto = this.cliente.endProprietario;
+      
+      // Extrair CEP (formato: "CEP: 00000-000")
+      const cepMatch = enderecoCompleto.match(/CEP:\s*(\d{5}-?\d{3})/);
+      if (cepMatch) {
+        this.cep = cepMatch[1];
+        if (!this.cep.includes('-')) {
+          this.cep = this.cep.substring(0, 5) + '-' + this.cep.substring(5);
+        }
+      }
+      
+      // Tentar extrair número (formato: "Nº 123" ou "nº 123")
+      const numeroMatch = enderecoCompleto.match(/N[º°]\s*(\d+)/i);
+      if (numeroMatch) {
+        this.endereco.numero = numeroMatch[1];
+      }
+      
+      // Tentar extrair partes do endereço (se já tiver CEP, buscar do ViaCEP para garantir dados completos)
+      if (this.cep && this.cep.replace(/\D/g, '').length === 8) {
+        // Se já tem CEP, buscar novamente para garantir dados corretos
+        setTimeout(() => {
+          this.buscarCEP();
+        }, 500);
+      }
+    }
+  }
+
+  // Formata CEP com máscara
+  formatarCEP(event: any): void {
+    let value = event.target.value.replace(/\D/g, '');
+    
+    if (value.length <= 8) {
+      if (value.length > 5) {
+        value = value.substring(0, 5) + '-' + value.substring(5, 8);
+      }
+      this.cep = value;
+      this.cepError = '';
+      
+      // Busca automaticamente quando tiver 8 dígitos
+      const cepLimpo = value.replace(/\D/g, '');
+      if (cepLimpo.length === 8) {
+        // Pequeno delay para evitar múltiplas buscas
+        setTimeout(() => {
+          this.buscarCEP();
+        }, 300);
+      } else if (cepLimpo.length < 8) {
+        // Limpa endereço se CEP estiver incompleto
+        this.limparEndereco();
+      }
+    }
+  }
+
+  // Busca endereço por CEP usando ViaCEP
+  buscarCEP(): void {
+    const cepLimpo = this.cep.replace(/\D/g, '');
+    
+    if (cepLimpo.length !== 8) {
+      this.cepError = 'CEP deve ter 8 dígitos';
+      return;
+    }
+
+    // Preservar número antes de buscar (caso já tenha sido preenchido)
+    const numeroAtual = this.endereco.numero || '';
+
+    // Evita buscar novamente se já buscou o mesmo CEP e os dados já estão preenchidos
+    if (this.ultimoCepBuscado === cepLimpo && this.endereco.logradouro) {
+      return;
+    }
+
+    // Evita múltiplas buscas simultâneas
+    if (this.buscandoCEP) {
+      return;
+    }
+
+    this.buscandoCEP = true;
+    this.cepError = '';
+    this.ultimoCepBuscado = cepLimpo;
+
+    // API ViaCEP
+    this.http.get(`https://viacep.com.br/ws/${cepLimpo}/json/`).subscribe({
+      next: (data: any) => {
+        this.buscandoCEP = false;
+        
+        if (data.erro) {
+          this.cepError = 'CEP não encontrado';
+          this.limparEndereco();
+          this.endereco.numero = numeroAtual; // Restaura número mesmo em caso de erro
+          this.ultimoCepBuscado = '';
+          return;
+        }
+
+        // Preencher campos do endereço
+        this.endereco.logradouro = data.logradouro || '';
+        this.endereco.bairro = data.bairro || '';
+        this.endereco.cidade = data.localidade || '';
+        this.endereco.uf = data.uf || '';
+        
+        // Preservar o número se já existir, caso contrário deixar vazio
+        this.endereco.numero = numeroAtual || '';
+        
+        this.enderecoError = '';
+      },
+      error: (error) => {
+        this.buscandoCEP = false;
+        this.cepError = 'Erro ao buscar CEP. Tente novamente.';
+        this.limparEndereco();
+        this.endereco.numero = numeroAtual; // Restaura número mesmo em caso de erro
+        this.ultimoCepBuscado = '';
+      }
+    });
+  }
+
+  // Limpa campos do endereço
+  limparEndereco(): void {
+    this.endereco.logradouro = '';
+    this.endereco.bairro = '';
+    this.endereco.cidade = '';
+    this.endereco.uf = '';
+    // Não limpar número, pode ter sido preenchido manualmente
+  }
+
   // Validação de endereço
   validarEndereco(): void {
-    const endProprietario = this.cliente.endProprietario || '';
-    const enderecos = this.cliente.enderecos || '';
+    const cepLimpo = this.cep.replace(/\D/g, '');
 
-    if (!endProprietario.trim() && !enderecos) {
-      this.enderecoError = 'Informe pelo menos um endereço';
+    if (!cepLimpo || cepLimpo.length !== 8) {
+      this.enderecoError = 'CEP é obrigatório e deve ter 8 dígitos';
       return;
     }
 
-    if (endProprietario.trim() && endProprietario.trim().length < 5) {
-      this.enderecoError = 'Endereço deve ter pelo menos 5 caracteres';
+    if (!this.endereco.logradouro || !this.endereco.logradouro.trim()) {
+      this.enderecoError = 'CEP inválido ou endereço não encontrado';
       return;
     }
 
-    if (typeof enderecos === 'string' && enderecos.trim() && enderecos.trim().length < 5) {
-      this.enderecoError = 'Endereço deve ter pelo menos 5 caracteres';
+    if (!this.endereco.numero || !this.endereco.numero.trim()) {
+      this.enderecoError = 'Número da casa é obrigatório';
       return;
     }
 
     this.enderecoError = '';
+  }
+
+  // Monta endereço completo para salvar
+  montarEnderecoCompleto(): string {
+    const partes = [];
+    
+    if (this.endereco.logradouro) {
+      partes.push(this.endereco.logradouro);
+    }
+    
+    if (this.endereco.numero) {
+      partes.push(`Nº ${this.endereco.numero}`);
+    }
+    
+    if (this.endereco.bairro) {
+      partes.push(this.endereco.bairro);
+    }
+    
+    if (this.endereco.cidade) {
+      partes.push(this.endereco.cidade);
+    }
+    
+    if (this.endereco.uf) {
+      partes.push(this.endereco.uf);
+    }
+    
+    if (this.cep) {
+      partes.push(`CEP: ${this.cep}`);
+    }
+    
+    return partes.join(', ');
   }
 
   updateCliente(): void {
@@ -252,11 +428,18 @@ export class ClienteUpdateComponent implements OnInit {
     // Converter data de nascimento para formato do backend (yyyy-mm-dd)
     const dataNascimentoBackend = this.converterDataParaBackend(this.cliente.cliDataNascimento);
 
+    // Montar endereço completo
+    const enderecoCompleto = this.montarEnderecoCompleto();
+
     // Salvar CPF apenas com números e data no formato do backend
+    // Backend espera cliAtivo como String ("true" ou "false"), não boolean
+    const cliAtivoValue = this.cliente.cliAtivo === true || this.cliente.cliAtivo === 'true' || this.cliente.cliAtivo === 'TRUE';
     const clienteParaEnviar = {
       ...this.cliente,
       cliCpf: cpfLimpo,
-      cliDataNascimento: dataNascimentoBackend
+      cliDataNascimento: dataNascimentoBackend,
+      endProprietario: enderecoCompleto,
+      cliAtivo: cliAtivoValue ? 'true' : 'false' // Backend espera String
     };
 
     this.clienteService.update(clienteParaEnviar).subscribe(() => {
