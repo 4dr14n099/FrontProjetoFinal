@@ -39,6 +39,11 @@ export class PedidoService {
     return this.http.get<Pedido>(url);
   }
 
+  update(pedido: Pedido): Observable<Pedido> {
+    const url = `${this.baseUrl}/${pedido.pedId}`;
+    return this.http.put<Pedido>(url, pedido, this.httpOptions);
+  }
+
   delete(pedId: number): Observable<Pedido> {
     const url = `${this.baseUrl}/${pedId}`;
     return this.http.delete<Pedido>(url);

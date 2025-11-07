@@ -29,8 +29,8 @@
     <ng-container matColumnDef="cliAtivo">
       <th mat-header-cell *matHeaderCellDef>ATIVO</th>
       <td mat-cell *matCellDef="let row">
-        <mat-icon *ngIf="row.cliAtivo === 'true' || row.cliAtivo === true" color="primary">check_circle</mat-icon>
-        <mat-icon *ngIf="row.cliAtivo !== 'true' && row.cliAtivo !== true" color="warn">cancel</mat-icon>
+        <mat-icon *ngIf="isAtivo(row.cliAtivo)" color="primary">check_circle</mat-icon>
+        <mat-icon *ngIf="!isAtivo(row.cliAtivo)" color="warn">cancel</mat-icon>
       </td>
     </ng-container>
 

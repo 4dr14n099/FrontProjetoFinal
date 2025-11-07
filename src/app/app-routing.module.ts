@@ -15,6 +15,7 @@ import { FormaPagamentoUpdateComponent } from './components/formaPagamento/forma
 import { FormaPagamentoDeleteComponent } from './components/formaPagamento/forma-pagamento-delete/forma-pagamento-delete.component';
 import { PedidoCrudComponent } from './views/pedido-crud/pedido-crud.component';
 import { PedidoCreateComponent } from './components/pedido/pedido-create/pedido-create.component';
+import { PedidoUpdateComponent } from './components/pedido/pedido-update/pedido-update.component';
 import { PedidoDeleteComponent } from './components/pedido/pedido-delete/pedido-delete.component';
 
 //configuração para rotear entre as paginas na home
@@ -78,6 +79,10 @@ const routes: Routes = [
   {
     path: "fpedido/create",
     component: PedidoCreateComponent
+  },
+  {
+    path: "fpedido/update/:pedId",
+    component: PedidoUpdateComponent
   },
   {
     path: "fpedido/delete/:pedId",

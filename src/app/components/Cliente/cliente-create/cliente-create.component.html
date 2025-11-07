@@ -12,7 +12,16 @@
 
       <mat-form-field appearance="fill">
         <mat-label>CPF</mat-label>
-        <input matInput [(ngModel)]="cliente.cliCpf" name="cliCpf" required />
+        <input 
+          matInput 
+          [(ngModel)]="cliente.cliCpf" 
+          name="cliCpf" 
+          required 
+          maxlength="14"
+          (input)="formatarCPF($event)"
+          (blur)="validarCPFCampo()"
+          placeholder="000.000.000-00" />
+        <mat-error *ngIf="cpfError">{{ cpfError }}</mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
@@ -22,7 +31,17 @@
 
       <mat-form-field appearance="fill">
         <mat-label>Data de Nascimento</mat-label>
-        <input matInput type="date" [(ngModel)]="cliente.cliDataNascimento" name="cliDataNascimento" required />
+        <input 
+          matInput 
+          [(ngModel)]="cliente.cliDataNascimento" 
+          name="cliDataNascimento" 
+          required 
+          maxlength="10"
+          (input)="formatarDataNascimento($event)"
+          (blur)="validarDataNascimentoCampo()"
+          placeholder="dd/mm/aaaa" />
+        <mat-error *ngIf="dataNascimentoError">{{ dataNascimentoError }}</mat-error>
+        <mat-hint>Cliente deve ser maior de idade (18 anos)</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
@@ -36,7 +55,13 @@
 
       <mat-form-field appearance="fill">
         <mat-label>Data de Cadastro</mat-label>
-        <input matInput type="date" [(ngModel)]="cliente.cliDataCadastro" name="cliDataCadastro" />
+        <input 
+          matInput 
+          type="date" 
+          [(ngModel)]="cliente.cliDataCadastro" 
+          name="cliDataCadastro" 
+          readonly />
+        <mat-hint>Definida automaticamente</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="full-width">
@@ -46,14 +71,95 @@
 
       <mat-checkbox [(ngModel)]="cliente.cliAtivo" name="cliAtivo">Ativo</mat-checkbox>
 
-      <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Endereço do Proprietário </mat-label>
-        <input matInput [(ngModel)]="cliente.endProprietario" name="endProprietario" />
+      <!-- CEP -->
+      <mat-form-field appearance="fill">
+        <mat-label>CEP</mat-label>
+        <input 
+          matInput 
+          [(ngModel)]="cep" 
+          name="cep" 
+          required
+          maxlength="9"
+          (input)="formatarCEP($event)"
+          (blur)="buscarCEP()"
+          placeholder="00000-000" />
+        <mat-icon matSuffix *ngIf="buscandoCEP" class="spinner" style="color: #00ffff;">hourglass_empty</mat-icon>
+        <mat-error *ngIf="cepError">{{ cepError }}</mat-error>
+        <mat-hint>Digite o CEP e aguarde a busca automática</mat-hint>
       </mat-form-field>
 
+      <!-- Logradouro (Rua) -->
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Endereços </mat-label>
-        <textarea matInput [(ngModel)]="cliente.enderecos" name="enderecos"></textarea>
+        <mat-label>Logradouro (Rua)</mat-label>
+        <input 
+          matInput 
+          [(ngModel)]="endereco.logradouro" 
+          name="logradouro" 
+          readonly />
+        <mat-hint>Preenchido automaticamente pelo CEP</mat-hint>
+      </mat-form-field>
+
+      <!-- Número da Casa -->
+      <mat-form-field appearance="fill">
+        <mat-label>Número</mat-label>
+        <input 
+          matInput 
+          [(ngModel)]="endereco.numero" 
+          name="numero" 
+          [required]="endereco.logradouro && endereco.logradouro.trim() !== ''"
+          placeholder="123"
+          (blur)="validarEndereco()" />
+        <mat-error *ngIf="enderecoError && enderecoError.includes('Número')">Número da casa é obrigatório</mat-error>
+      </mat-form-field>
+
+      <!-- Bairro -->
+      <mat-form-field appearance="fill">
+        <mat-label>Bairro</mat-label>
+        <input 
+          matInput 
+          [(ngModel)]="endereco.bairro" 
+          name="bairro" 
+          readonly />
+        <mat-hint>Preenchido automaticamente pelo CEP</mat-hint>
+      </mat-form-field>
+
+      <!-- Cidade -->
+      <mat-form-field appearance="fill">
+        <mat-label>Cidade</mat-label>
+        <input 
+          matInput 
+          [(ngModel)]="endereco.cidade" 
+          name="cidade" 
+          readonly />
+        <mat-hint>Preenchido automaticamente pelo CEP</mat-hint>
+      </mat-form-field>
+
+      <!-- UF -->
+      <mat-form-field appearance="fill">
+        <mat-label>UF</mat-label>
+        <input 
+          matInput 
+          [(ngModel)]="endereco.uf" 
+          name="uf" 
+          readonly
+          maxlength="2"
+          style="text-transform: uppercase;" />
+        <mat-hint>Preenchido automaticamente pelo CEP</mat-hint>
+      </mat-form-field>
+
+      <!-- Erro geral de endereço -->
+      <div *ngIf="enderecoError && !enderecoError.includes('Número')" style="color: #f44336; font-size: 12px; margin-top: -16px; margin-bottom: 16px; padding-left: 16px;">
+        {{ enderecoError }}
+      </div>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Endereços Adicionais (Opcional)</mat-label>
+        <textarea 
+          matInput 
+          [(ngModel)]="cliente.enderecos" 
+          name="enderecos"
+          rows="3"
+          placeholder="Informe endereços adicionais, se houver"></textarea>
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="full-width">

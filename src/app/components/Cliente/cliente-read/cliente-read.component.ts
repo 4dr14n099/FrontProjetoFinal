@@ -21,4 +21,9 @@ export class ClienteReadComponent implements OnInit {
       this.clientes = clientes;
     });
   }
+
+  isAtivo(cliAtivo: string | boolean | undefined): boolean {
+    // Trata tanto boolean true quanto string 'true'
+    return cliAtivo === true || cliAtivo === 'true';
+  }
 }
