@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Cliente } from '../cliente.model';
 import { ClienteService } from '../cliente.service';
 import { Router, ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-cliente-delete',
@@ -16,29 +18,59 @@ export class ClienteDeleteComponent implements OnInit {
     cliDataNascimento: '',
     cliSexo: ''
   }
+  loading: boolean = false;
 
   constructor(
     private clienteService: ClienteService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
+    this.loading = true;
     const cliId = this.route.snapshot.paramMap.get('cliId');
     if (cliId) {
-      this.clienteService.readById(cliId).subscribe(cliente => {
-        this.cliente = cliente;
+      this.clienteService.readById(cliId).subscribe({
+        next: (cliente) => {
+          this.cliente = cliente;
+          this.loading = false;
+        },
+        error: (error) => {
+          this.clienteService.showMessage('Erro ao carregar cliente!');
+          this.loading = false;
+          this.router.navigate(['/fcliente']);
+        }
       });
     }
   }
 
   deleteCliente(): void {
-    if (this.cliente.cliId) {
-      this.clienteService.delete(this.cliente.cliId).subscribe(() => {
-        this.clienteService.showMessage('Cliente excluído!');
-        this.router.navigate(['/fcliente']);
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Confirmar Exclusão',
+        message: `Deseja realmente excluir o cliente ${this.cliente.cliNome}?`,
+        confirmText: 'Excluir',
+        cancelText: 'Cancelar'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && this.cliente.cliId) {
+        this.loading = true;
+        this.clienteService.delete(this.cliente.cliId).subscribe({
+          next: () => {
+            this.clienteService.showMessage('Cliente excluído com sucesso!');
+            this.router.navigate(['/fcliente']);
+          },
+          error: (error) => {
+            this.clienteService.showMessage('Erro ao excluir cliente!');
+            this.loading = false;
+          }
+        });
+      }
+    });
   }
 
   cancel(): void {

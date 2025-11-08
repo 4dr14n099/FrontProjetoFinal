@@ -1,5 +1,6 @@
 import { NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -39,7 +40,14 @@ import { ProdutoReadComponent } from './components/Produto/produto-read/produto-
 import { ClienteReadComponent } from './components/Cliente/cliente-read/cliente-read.component';
 
 import { MatIconModule } from '@angular/material/icon';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormaPagamentoReadComponent } from './components/formaPagamento/forma-pagamento-read/forma-pagamento-read.component';
+import { ConfirmDialogComponent } from './components/shared/confirm-dialog/confirm-dialog.component';
+import { HttpErrorInterceptor } from './interceptors/http-error.interceptor';
 import { HomeComponent } from './views/home/home.component';
 import { ClienteUpdateComponent } from './components/Cliente/cliente-update/cliente-update.component';
 import { ClienteDeleteComponent } from './components/Cliente/cliente-delete/cliente-delete.component';
@@ -81,7 +89,8 @@ registerLocaleData(localePt)
     PedidoReadComponent,
     PedidoUpdateComponent,
     PedidoDeleteComponent,
-    PedidoCrudComponent
+    PedidoCrudComponent,
+    ConfirmDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -105,12 +114,24 @@ registerLocaleData(localePt)
     MatPaginatorModule,
     MatSortModule,
     MatOptionModule,
-    MatIconModule   // <--- ADICIONEI ESTE AQUI também nos imports
+    MatIconModule,
+    MatAutocompleteModule,
+    MatDialogModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
+    MatTooltipModule
   ],
-  providers: [{
-    provide: LOCALE_ID,
-    useValue: 'pt-BR'
-  }],
+  providers: [
+    {
+      provide: LOCALE_ID,
+      useValue: 'pt-BR'
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpErrorInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

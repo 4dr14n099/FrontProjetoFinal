@@ -1,20 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { PedidoService } from '../pedido.service';
 import { Pedido } from '../pedido.model';
 import { ClienteService } from '../../Cliente/cliente.service';
 import { Cliente } from '../../Cliente/cliente.model';
 import { forkJoin } from 'rxjs';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-pedido-read',
   templateUrl: './pedido-read.component.html',
   styleUrls: ['./pedido-read.component.css']
 })
-export class PedidoReadComponent implements OnInit {
+export class PedidoReadComponent implements OnInit, AfterViewInit {
 
   pedidos: Pedido[] = [];
   clientes: Cliente[] = [];
   displayedColumns = ['pedId', 'cliente', 'pedData', 'pedValorTotal', 'pedStatus', 'action'];
+  dataSource = new MatTableDataSource<Pedido>([]);
+  loading: boolean = false;
+  searchTerm: string = '';
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private pedidoService: PedidoService,
@@ -22,64 +31,89 @@ export class PedidoReadComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.loading = true;
     // Busca pedidos e clientes simultaneamente
     forkJoin({
       pedidos: this.pedidoService.read(),
       clientes: this.clienteService.read()
-    }).subscribe(({ pedidos, clientes }) => {
-      console.log('Pedidos recebidos do backend:', JSON.stringify(pedidos, null, 2));
-      console.log('Clientes recebidos:', clientes);
-      
-      this.clientes = clientes;
-      
-      // Processa cada pedido para encontrar o cliente correspondente
-      this.pedidos = pedidos.map((pedido: any) => {
-        console.log('Processando pedido:', JSON.stringify(pedido, null, 2));
+    }).subscribe({
+      next: ({ pedidos, clientes }) => {
+        this.clientes = clientes;
         
-        // Tenta encontrar o ID do cliente de várias formas possíveis
-        let clienteId: number | null = null;
-        
-        // 1. Verifica se tem cliId diretamente no pedido
-        if (pedido.cliId) {
-          clienteId = pedido.cliId;
-          console.log('Cliente ID encontrado no pedido (cliId):', clienteId);
-        }
-        
-        // 2. Verifica se tem clienteId no pedido
-        else if (pedido.clienteId) {
-          clienteId = pedido.clienteId;
-          console.log('Cliente ID encontrado no pedido (clienteId):', clienteId);
-        }
-        
-        // 3. Verifica se o objeto cliente tem ID
-        else if (pedido.cliente) {
-          if (typeof pedido.cliente === 'object') {
-            clienteId = pedido.cliente.cliId || pedido.cliente.clienteId || pedido.cliente.id;
-            console.log('Cliente ID encontrado no objeto cliente:', clienteId);
-          } else if (typeof pedido.cliente === 'number') {
-            clienteId = pedido.cliente;
-            console.log('Cliente é um número (ID):', clienteId);
+        // Processa cada pedido para encontrar o cliente correspondente
+        this.pedidos = pedidos.map((pedido: any) => {
+          // Tenta encontrar o ID do cliente de várias formas possíveis
+          let clienteId: number | null = null;
+          
+          // 1. Verifica se tem cliId diretamente no pedido
+          if (pedido.cliId) {
+            clienteId = pedido.cliId;
           }
-        }
-        
-        // Se encontrou o ID, busca o cliente completo
-        if (clienteId && this.clientes.length > 0) {
-          const clienteEncontrado = this.clientes.find(c => c.cliId === clienteId);
-          if (clienteEncontrado) {
-            console.log('Cliente encontrado e atribuído:', clienteEncontrado.cliNome);
-            pedido.cliente = clienteEncontrado;
-          } else {
-            console.log('Cliente não encontrado na lista para ID:', clienteId);
+          // 2. Verifica se tem clienteId no pedido
+          else if (pedido.clienteId) {
+            clienteId = pedido.clienteId;
           }
-        } else {
-          console.log('Nenhum ID de cliente encontrado no pedido');
-        }
-        
-        return pedido;
-      });
-      
-      console.log('Pedidos processados:', this.pedidos);
+          // 3. Verifica se o objeto cliente tem ID
+          else if (pedido.cliente) {
+            if (typeof pedido.cliente === 'object') {
+              clienteId = pedido.cliente.cliId || pedido.cliente.clienteId || pedido.cliente.id;
+            } else if (typeof pedido.cliente === 'number') {
+              clienteId = pedido.cliente;
+            }
+          }
+          
+          // Se encontrou o ID, busca o cliente completo
+          if (clienteId && this.clientes.length > 0) {
+            const clienteEncontrado = this.clientes.find(c => c.cliId === clienteId);
+            if (clienteEncontrado) {
+              pedido.cliente = clienteEncontrado;
+            }
+          }
+          
+          return pedido;
+        });
+        this.dataSource.data = this.pedidos;
+        // Filtro customizado para buscar em todos os campos
+        this.dataSource.filterPredicate = (data: Pedido, filter: string) => {
+          const searchStr = filter.toLowerCase();
+          const clienteNome = this.getClienteNome(data).toLowerCase();
+          const pedId = data.pedId?.toString() || '';
+          const pedStatus = (data.pedStatus || '').toLowerCase();
+          const pedValorTotal = data.pedValorTotal?.toString() || '';
+          const pedData = data.pedData ? new Date(data.pedData).toLocaleDateString('pt-BR') : '';
+          
+          return clienteNome.includes(searchStr) ||
+                 pedId.includes(searchStr) ||
+                 pedStatus.includes(searchStr) ||
+                 pedValorTotal.includes(searchStr) ||
+                 pedData.includes(searchStr);
+        };
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.loading = false;
+      },
+      error: (error) => {
+        this.pedidoService.showMessage('Erro ao carregar pedidos!');
+        this.loading = false;
+      }
     });
+  }
+
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.searchTerm = filterValue.trim().toLowerCase();
+    this.dataSource.filter = this.searchTerm;
+    
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (this.dataSource) {
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    }
   }
 
   getClienteNome(pedido: any): string {

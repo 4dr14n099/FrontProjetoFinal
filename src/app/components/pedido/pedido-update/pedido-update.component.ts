@@ -3,6 +3,8 @@ import { Pedido } from '../pedido.model';
 import { PedidoService } from '../pedido.service';
 import { ClienteService } from '../../Cliente/cliente.service';
 import { Cliente } from '../../Cliente/cliente.model';
+import { ProdutoService } from '../../Produto/produto.service';
+import { Produto } from '../../Produto/produto.module';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
@@ -20,15 +22,19 @@ export class PedidoUpdateComponent implements OnInit {
   }
 
   clientes: Cliente[] = [];
+  produtos: Produto[] = [];
+  produtoSelecionado: Produto | null = null;
 
   constructor(
     private pedidoService: PedidoService,
     private clienteService: ClienteService,
+    private produtoService: ProdutoService,
     private router: Router,
     private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
+    this.carregarProdutos();
     const pedId = this.route.snapshot.paramMap.get('pedId');
     if (pedId) {
       // Carregar pedido e clientes simultaneamente
@@ -78,6 +84,20 @@ export class PedidoUpdateComponent implements OnInit {
     this.clienteService.read().subscribe(clientes => {
       this.clientes = clientes;
     });
+  }
+
+  carregarProdutos(): void {
+    this.produtoService.read().subscribe(produtos => {
+      this.produtos = produtos;
+    });
+  }
+
+  onProdutoSelecionado(): void {
+    if (this.produtoSelecionado && this.produtoSelecionado.proPrecoVenda) {
+      this.pedido.pedValorTotal = this.produtoSelecionado.proPrecoVenda;
+    } else {
+      this.pedido.pedValorTotal = 0;
+    }
   }
 
   updatePedido(): void {

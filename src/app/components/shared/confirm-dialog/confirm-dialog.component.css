@@ -1,0 +1,9 @@
+mat-dialog-content {
+  min-width: 300px;
+  padding: 20px;
+}
+
+mat-dialog-actions {
+  padding: 10px 20px;
+}
+

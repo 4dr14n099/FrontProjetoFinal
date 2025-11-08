@@ -3,6 +3,8 @@ import { Pedido } from '../pedido.model';
 import { PedidoService } from '../pedido.service';
 import { ClienteService } from '../../Cliente/cliente.service';
 import { Cliente } from '../../Cliente/cliente.model';
+import { ProdutoService } from '../../Produto/produto.service';
+import { Produto } from '../../Produto/produto.module';
 import { Router } from '@angular/router';
 
 @Component({
@@ -19,15 +21,19 @@ export class PedidoCreateComponent implements OnInit {
   }
 
   clientes: Cliente[] = [];
+  produtos: Produto[] = [];
+  produtoSelecionado: Produto | null = null;
 
   constructor(
     private pedidoService: PedidoService,
     private clienteService: ClienteService,
+    private produtoService: ProdutoService,
     private router: Router
   ) { }
 
   ngOnInit(): void {
     this.carregarClientes();
+    this.carregarProdutos();
     // Define data padrão como hoje
     if (!this.pedido.pedData) {
       this.pedido.pedData = new Date().toISOString().split('T')[0];
@@ -38,6 +44,20 @@ export class PedidoCreateComponent implements OnInit {
     this.clienteService.read().subscribe(clientes => {
       this.clientes = clientes;
     });
+  }
+
+  carregarProdutos(): void {
+    this.produtoService.read().subscribe(produtos => {
+      this.produtos = produtos;
+    });
+  }
+
+  onProdutoSelecionado(): void {
+    if (this.produtoSelecionado && this.produtoSelecionado.proPrecoVenda) {
+      this.pedido.pedValorTotal = this.produtoSelecionado.proPrecoVenda;
+    } else {
+      this.pedido.pedValorTotal = 0;
+    }
   }
 
   createPedido(): void {

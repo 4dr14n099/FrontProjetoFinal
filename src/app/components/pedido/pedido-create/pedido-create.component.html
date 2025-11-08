@@ -12,6 +12,20 @@
             {{ cliente.cliNome }} - {{ cliente.cliCpf }}
           </mat-option>
         </mat-select>
+        <mat-hint *ngIf="pedido.cliente && pedido.cliente.cliNome">
+          Cliente selecionado: {{ pedido.cliente.cliNome }}
+        </mat-hint>
+      </mat-form-field>
+
+      <!-- Produto -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Produto</mat-label>
+        <mat-select [(ngModel)]="produtoSelecionado" name="produto" (selectionChange)="onProdutoSelecionado()">
+          <mat-option [value]="null">Selecione um produto</mat-option>
+          <mat-option *ngFor="let produto of produtos" [value]="produto">
+            {{ produto.proNome }} - R$ {{ produto.proPrecoVenda | number:'1.2-2' }}
+          </mat-option>
+        </mat-select>
       </mat-form-field>
 
       <!-- Data do Pedido -->

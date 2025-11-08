@@ -14,10 +14,14 @@ export class ProdutoReadComponent implements OnInit {
   constructor(private produtoService: ProdutoService) { }
 
   ngOnInit(): void {
-    this.produtoService.read().subscribe(produto => {
-      this.products = produto
-      console.log(produto)  
-    })
+    this.produtoService.read().subscribe({
+      next: (produto) => {
+        this.products = produto;
+      },
+      error: (error) => {
+        this.produtoService.showMessage('Erro ao carregar produtos!');
+      }
+    });
   }
 
 }

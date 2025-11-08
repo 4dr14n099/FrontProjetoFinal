@@ -3,13 +3,14 @@ import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
 import { Pedido } from './pedido.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PedidoService {
 
-  baseUrl = "http://localhost:8080/pedidos";
+  baseUrl = `${environment.apiUrl}/pedidos`;
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json'
