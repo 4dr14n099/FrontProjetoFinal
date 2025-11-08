@@ -5,6 +5,8 @@ import { ClienteService } from '../../Cliente/cliente.service';
 import { Cliente } from '../../Cliente/cliente.model';
 import { ProdutoService } from '../../Produto/produto.service';
 import { Produto } from '../../Produto/produto.module';
+import { FormapagamentoService } from '../../formaPagamento/formapagamento.service';
+import { FormaPagamento } from '../../formaPagamento/formapagamento.model';
 import { Router } from '@angular/router';
 
 @Component({
@@ -22,18 +24,21 @@ export class PedidoCreateComponent implements OnInit {
 
   clientes: Cliente[] = [];
   produtos: Produto[] = [];
+  formasPagamento: FormaPagamento[] = [];
   produtoSelecionado: Produto | null = null;
 
   constructor(
     private pedidoService: PedidoService,
     private clienteService: ClienteService,
     private produtoService: ProdutoService,
+    private formapagamentoService: FormapagamentoService,
     private router: Router
   ) { }
 
   ngOnInit(): void {
     this.carregarClientes();
     this.carregarProdutos();
+    this.carregarFormasPagamento();
     // Define data padrão como hoje
     if (!this.pedido.pedData) {
       this.pedido.pedData = new Date().toISOString().split('T')[0];
@@ -49,6 +54,20 @@ export class PedidoCreateComponent implements OnInit {
   carregarProdutos(): void {
     this.produtoService.read().subscribe(produtos => {
       this.produtos = produtos;
+    });
+  }
+
+  carregarFormasPagamento(): void {
+    this.formapagamentoService.read().subscribe(formasPagamento => {
+      // Filtrar apenas formas de pagamento ativas
+      this.formasPagamento = formasPagamento.filter(fp => {
+        const ativo = fp.formAtivo;
+        if (ativo === true) return true;
+        if (typeof ativo === 'string') {
+          return (ativo as string).toLowerCase() === 'true';
+        }
+        return false;
+      });
     });
   }
 
@@ -68,7 +87,7 @@ export class PedidoCreateComponent implements OnInit {
     }
     
     if (!this.pedido.pedValorTotal || this.pedido.pedValorTotal <= 0) {
-      this.pedidoService.showMessage('Informe um valor total válido!');
+      this.pedidoService.showMessage('Informe um valor total válido (maior que zero)!');
       return;
     }
 
@@ -78,7 +97,7 @@ export class PedidoCreateComponent implements OnInit {
     }
 
     // Preparar dados para envio conforme estrutura do backend
-    // O backend espera receber o cliente como referência (apenas com ID)
+    // O backend espera receber o cliente e forma de pagamento como referência (apenas com ID)
     const pedidoParaEnviar: any = {
       cliente: {
         cliId: this.pedido.cliente.cliId
@@ -87,6 +106,13 @@ export class PedidoCreateComponent implements OnInit {
       pedValorTotal: Number(this.pedido.pedValorTotal),
       pedStatus: this.pedido.pedStatus || 'Pendente'
     };
+
+    // Adicionar forma de pagamento se selecionada
+    if (this.pedido.formaPagamento && this.pedido.formaPagamento.formId) {
+      pedidoParaEnviar.formaPagamento = {
+        formId: this.pedido.formaPagamento.formId
+      };
+    }
 
     // Adicionar campo opcional apenas se existir
     if (this.pedido.pedObservacoes && this.pedido.pedObservacoes.trim()) {

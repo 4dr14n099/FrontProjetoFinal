@@ -5,6 +5,8 @@ import { ClienteService } from '../../Cliente/cliente.service';
 import { Cliente } from '../../Cliente/cliente.model';
 import { ProdutoService } from '../../Produto/produto.service';
 import { Produto } from '../../Produto/produto.module';
+import { FormapagamentoService } from '../../formaPagamento/formapagamento.service';
+import { FormaPagamento } from '../../formaPagamento/formapagamento.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
@@ -23,25 +25,38 @@ export class PedidoUpdateComponent implements OnInit {
 
   clientes: Cliente[] = [];
   produtos: Produto[] = [];
+  formasPagamento: FormaPagamento[] = [];
   produtoSelecionado: Produto | null = null;
 
   constructor(
     private pedidoService: PedidoService,
     private clienteService: ClienteService,
     private produtoService: ProdutoService,
+    private formapagamentoService: FormapagamentoService,
     private router: Router,
     private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
     this.carregarProdutos();
+    this.carregarFormasPagamento();
     const pedId = this.route.snapshot.paramMap.get('pedId');
     if (pedId) {
-      // Carregar pedido e clientes simultaneamente
+      // Carregar pedido, clientes e formas de pagamento simultaneamente
       forkJoin({
         pedido: this.pedidoService.readById(pedId),
-        clientes: this.clienteService.read()
-      }).subscribe(({ pedido, clientes }) => {
+        clientes: this.clienteService.read(),
+        formasPagamento: this.formapagamentoService.read()
+      }).subscribe(({ pedido, clientes, formasPagamento }) => {
+        // Filtrar apenas formas de pagamento ativas
+        this.formasPagamento = formasPagamento.filter(fp => {
+          const ativo = fp.formAtivo;
+          if (ativo === true) return true;
+          if (typeof ativo === 'string') {
+            return (ativo as string).toLowerCase() === 'true';
+          }
+          return false;
+        });
         this.clientes = clientes;
         this.pedido = pedido;
         
@@ -74,6 +89,30 @@ export class PedidoUpdateComponent implements OnInit {
             this.pedido.cliente = { cliId: clienteId } as Cliente;
           }
         }
+
+        // Tratar a forma de pagamento - pode vir como objeto completo, apenas ID ou referência
+        let formaPagamentoId: number | null = null;
+        
+        if (pedido.formId) {
+          formaPagamentoId = pedido.formId;
+        } else if (pedido.formaPagamento) {
+          if (typeof pedido.formaPagamento === 'object' && pedido.formaPagamento.formId) {
+            formaPagamentoId = pedido.formaPagamento.formId;
+          } else if (typeof pedido.formaPagamento === 'number') {
+            formaPagamentoId = pedido.formaPagamento;
+          }
+        }
+
+        // Se encontrou o ID, buscar a forma de pagamento completa na lista
+        if (formaPagamentoId && this.formasPagamento.length > 0) {
+          const formaPagamentoEncontrada = this.formasPagamento.find(f => f.formId === formaPagamentoId);
+          if (formaPagamentoEncontrada) {
+            this.pedido.formaPagamento = formaPagamentoEncontrada;
+          } else {
+            // Se não encontrou, criar um objeto mínimo com o ID
+            this.pedido.formaPagamento = { formId: formaPagamentoId } as FormaPagamento;
+          }
+        }
       });
     } else {
       this.carregarClientes();
@@ -89,6 +128,20 @@ export class PedidoUpdateComponent implements OnInit {
   carregarProdutos(): void {
     this.produtoService.read().subscribe(produtos => {
       this.produtos = produtos;
+    });
+  }
+
+  carregarFormasPagamento(): void {
+    this.formapagamentoService.read().subscribe(formasPagamento => {
+      // Filtrar apenas formas de pagamento ativas
+      this.formasPagamento = formasPagamento.filter(fp => {
+        const ativo = fp.formAtivo;
+        if (ativo === true) return true;
+        if (typeof ativo === 'string') {
+          return (ativo as string).toLowerCase() === 'true';
+        }
+        return false;
+      });
     });
   }
 
@@ -132,6 +185,13 @@ export class PedidoUpdateComponent implements OnInit {
       pedValorTotal: Number(this.pedido.pedValorTotal),
       pedStatus: this.pedido.pedStatus || 'Pendente'
     };
+
+    // Adicionar forma de pagamento se selecionada
+    if (this.pedido.formaPagamento && this.pedido.formaPagamento.formId) {
+      pedidoParaEnviar.formaPagamento = {
+        formId: this.pedido.formaPagamento.formId
+      };
+    }
 
     // Adicionar campo opcional apenas se existir
     if (this.pedido.pedObservacoes && this.pedido.pedObservacoes.trim()) {

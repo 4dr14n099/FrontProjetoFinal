@@ -28,6 +28,20 @@
         </mat-select>
       </mat-form-field>
 
+      <!-- Forma de Pagamento -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Forma de Pagamento</mat-label>
+        <mat-select [(ngModel)]="pedido.formaPagamento" name="formaPagamento">
+          <mat-option [value]="null">Selecione uma forma de pagamento</mat-option>
+          <mat-option *ngFor="let formaPagamento of formasPagamento" [value]="formaPagamento">
+            {{ formaPagamento.formDescricao }} - {{ formaPagamento.formTipo }}
+          </mat-option>
+        </mat-select>
+        <mat-hint *ngIf="pedido.formaPagamento && pedido.formaPagamento.formDescricao">
+          Forma de pagamento: {{ pedido.formaPagamento.formDescricao }}
+        </mat-hint>
+      </mat-form-field>
+
       <!-- Data do Pedido -->
       <mat-form-field appearance="fill">
         <mat-label>Data do Pedido</mat-label>

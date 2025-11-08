@@ -3,7 +3,7 @@
   <div style="padding: 16px;">
     <mat-form-field appearance="fill" style="width: 100%;">
       <mat-label>Buscar pedidos</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Digite para buscar por cliente, ID, status..." />
+      <input matInput (keyup)="applyFilter($event)" placeholder="Digite para buscar por cliente, forma de pagamento, ID, status..." />
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
   </div>
@@ -27,6 +27,12 @@
     <ng-container matColumnDef="cliente">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="cliente">Cliente</th>
       <td mat-cell *matCellDef="let row">{{ getClienteNome(row) }}</td>
+    </ng-container>
+
+    <!-- Forma de Pagamento -->
+    <ng-container matColumnDef="formaPagamento">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="formaPagamento">Forma de Pagamento</th>
+      <td mat-cell *matCellDef="let row">{{ getFormaPagamentoDesc(row) }}</td>
     </ng-container>
 
     <!-- Data do Pedido -->

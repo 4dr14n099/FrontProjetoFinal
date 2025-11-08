@@ -3,6 +3,8 @@ import { PedidoService } from '../pedido.service';
 import { Pedido } from '../pedido.model';
 import { ClienteService } from '../../Cliente/cliente.service';
 import { Cliente } from '../../Cliente/cliente.model';
+import { FormapagamentoService } from '../../formaPagamento/formapagamento.service';
+import { FormaPagamento } from '../../formaPagamento/formapagamento.model';
 import { forkJoin } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -17,7 +19,8 @@ export class PedidoReadComponent implements OnInit, AfterViewInit {
 
   pedidos: Pedido[] = [];
   clientes: Cliente[] = [];
-  displayedColumns = ['pedId', 'cliente', 'pedData', 'pedValorTotal', 'pedStatus', 'action'];
+  formasPagamento: FormaPagamento[] = [];
+  displayedColumns = ['pedId', 'cliente', 'formaPagamento', 'pedData', 'pedValorTotal', 'pedStatus', 'action'];
   dataSource = new MatTableDataSource<Pedido>([]);
   loading: boolean = false;
   searchTerm: string = '';
@@ -27,20 +30,23 @@ export class PedidoReadComponent implements OnInit, AfterViewInit {
 
   constructor(
     private pedidoService: PedidoService,
-    private clienteService: ClienteService
+    private clienteService: ClienteService,
+    private formapagamentoService: FormapagamentoService
   ) { }
 
   ngOnInit(): void {
     this.loading = true;
-    // Busca pedidos e clientes simultaneamente
+    // Busca pedidos, clientes e formas de pagamento simultaneamente
     forkJoin({
       pedidos: this.pedidoService.read(),
-      clientes: this.clienteService.read()
+      clientes: this.clienteService.read(),
+      formasPagamento: this.formapagamentoService.read()
     }).subscribe({
-      next: ({ pedidos, clientes }) => {
+      next: ({ pedidos, clientes, formasPagamento }) => {
         this.clientes = clientes;
+        this.formasPagamento = formasPagamento;
         
-        // Processa cada pedido para encontrar o cliente correspondente
+        // Processa cada pedido para encontrar o cliente e forma de pagamento correspondentes
         this.pedidos = pedidos.map((pedido: any) => {
           // Tenta encontrar o ID do cliente de várias formas possíveis
           let clienteId: number | null = null;
@@ -69,6 +75,34 @@ export class PedidoReadComponent implements OnInit, AfterViewInit {
               pedido.cliente = clienteEncontrado;
             }
           }
+
+          // Tenta encontrar o ID da forma de pagamento de várias formas possíveis
+          let formaPagamentoId: number | null = null;
+          
+          // 1. Verifica se tem formId diretamente no pedido
+          if (pedido.formId) {
+            formaPagamentoId = pedido.formId;
+          }
+          // 2. Verifica se tem formaPagamentoId no pedido
+          else if (pedido.formaPagamentoId) {
+            formaPagamentoId = pedido.formaPagamentoId;
+          }
+          // 3. Verifica se o objeto formaPagamento tem ID
+          else if (pedido.formaPagamento) {
+            if (typeof pedido.formaPagamento === 'object') {
+              formaPagamentoId = pedido.formaPagamento.formId || pedido.formaPagamento.formaPagamentoId || pedido.formaPagamento.id;
+            } else if (typeof pedido.formaPagamento === 'number') {
+              formaPagamentoId = pedido.formaPagamento;
+            }
+          }
+          
+          // Se encontrou o ID, busca a forma de pagamento completa
+          if (formaPagamentoId && this.formasPagamento.length > 0) {
+            const formaPagamentoEncontrada = this.formasPagamento.find(f => f.formId === formaPagamentoId);
+            if (formaPagamentoEncontrada) {
+              pedido.formaPagamento = formaPagamentoEncontrada;
+            }
+          }
           
           return pedido;
         });
@@ -77,12 +111,14 @@ export class PedidoReadComponent implements OnInit, AfterViewInit {
         this.dataSource.filterPredicate = (data: Pedido, filter: string) => {
           const searchStr = filter.toLowerCase();
           const clienteNome = this.getClienteNome(data).toLowerCase();
+          const formaPagamentoDesc = this.getFormaPagamentoDesc(data).toLowerCase();
           const pedId = data.pedId?.toString() || '';
           const pedStatus = (data.pedStatus || '').toLowerCase();
           const pedValorTotal = data.pedValorTotal?.toString() || '';
           const pedData = data.pedData ? new Date(data.pedData).toLocaleDateString('pt-BR') : '';
           
           return clienteNome.includes(searchStr) ||
+                 formaPagamentoDesc.includes(searchStr) ||
                  pedId.includes(searchStr) ||
                  pedStatus.includes(searchStr) ||
                  pedValorTotal.includes(searchStr) ||
@@ -141,6 +177,37 @@ export class PedidoReadComponent implements OnInit, AfterViewInit {
       const cliente = this.clientes.find(c => c.cliId === clienteId);
       if (cliente && cliente.cliNome) {
         return cliente.cliNome;
+      }
+    }
+    
+    return 'N/A';
+  }
+
+  getFormaPagamentoDesc(pedido: any): string {
+    // Se a forma de pagamento já está completa e tem descrição
+    if (pedido.formaPagamento && pedido.formaPagamento.formDescricao) {
+      return pedido.formaPagamento.formDescricao;
+    }
+    
+    // Tenta buscar pelo ID da forma de pagamento
+    let formaPagamentoId: number | null = null;
+    
+    if (pedido.formId) {
+      formaPagamentoId = pedido.formId;
+    } else if (pedido.formaPagamentoId) {
+      formaPagamentoId = pedido.formaPagamentoId;
+    } else if (pedido.formaPagamento) {
+      if (typeof pedido.formaPagamento === 'object') {
+        formaPagamentoId = pedido.formaPagamento.formId || pedido.formaPagamento.formaPagamentoId || pedido.formaPagamento.id;
+      } else if (typeof pedido.formaPagamento === 'number') {
+        formaPagamentoId = pedido.formaPagamento;
+      }
+    }
+    
+    if (formaPagamentoId && this.formasPagamento.length > 0) {
+      const formaPagamento = this.formasPagamento.find(f => f.formId === formaPagamentoId);
+      if (formaPagamento && formaPagamento.formDescricao) {
+        return formaPagamento.formDescricao;
       }
     }
     

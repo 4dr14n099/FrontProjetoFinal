@@ -1,25 +1,75 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ClienteService } from '../cliente.service';
 import { Cliente } from '../cliente.model';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-cliente-read',
   templateUrl: './cliente-read.component.html',
   styleUrls: ['./cliente-read.component.css']
 })
-export class ClienteReadComponent implements OnInit {
+export class ClienteReadComponent implements OnInit, AfterViewInit {
 
   clientes: Cliente[] = [];
+  dataSource = new MatTableDataSource<Cliente>([]);
+  loading: boolean = false;
+  searchTerm: string = '';
 
   // IMPORTANTE: RG está incluído aqui
   displayedColumns: string[] = [ 'cliNome', 'cliCpf',  'cliAtivo', 'action'];
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
   constructor(private clienteService: ClienteService) {}
 
   ngOnInit(): void {
-    this.clienteService.read().subscribe(clientes => {
-      this.clientes = clientes;
+    this.loading = true;
+    this.clienteService.read().subscribe({
+      next: (clientes) => {
+        this.clientes = clientes;
+        this.dataSource.data = clientes;
+        // Filtro customizado
+        this.dataSource.filterPredicate = (data: Cliente, filter: string) => {
+          const searchStr = filter.toLowerCase();
+          const nome = (data.cliNome || '').toLowerCase();
+          const cpf = this.formatarCPF(data.cliCpf).toLowerCase();
+          const cpfLimpo = (data.cliCpf || '').replace(/\D/g, '');
+          const id = data.cliId?.toString() || '';
+          
+          return nome.includes(searchStr) ||
+                 cpf.includes(searchStr) ||
+                 cpfLimpo.includes(searchStr) ||
+                 id.includes(searchStr);
+        };
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.loading = false;
+      },
+      error: (error) => {
+        this.clienteService.showMessage('Erro ao carregar clientes!');
+        this.loading = false;
+      }
     });
+  }
+
+  ngAfterViewInit(): void {
+    if (this.dataSource) {
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    }
+  }
+
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.searchTerm = filterValue.trim().toLowerCase();
+    this.dataSource.filter = this.searchTerm;
+    
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   // Função para verificar se cliente está ativo

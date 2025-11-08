@@ -1,7 +1,13 @@
 <mat-card>
   <mat-card-title>Excluir Forma de Pagamento</mat-card-title>
 
-  <mat-card-content>
+  <!-- Indicador de carregamento -->
+  <div *ngIf="loading" style="text-align: center; padding: 40px;">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p style="margin-top: 16px;">Carregando...</p>
+  </div>
+
+  <mat-card-content *ngIf="!loading">
     <p>Tem certeza que deseja excluir a forma de pagamento abaixo?</p>
     
     <div style="margin: 20px 0;">
@@ -11,11 +17,11 @@
     </div>
   </mat-card-content>
 
-  <mat-card-actions>
-    <button mat-raised-button color="warn" (click)="deleteFormaPagamento()">
+  <mat-card-actions *ngIf="!loading">
+    <button mat-raised-button color="warn" (click)="deleteFormaPagamento()" [disabled]="loading" matTooltip="Excluir forma de pagamento">
       Excluir
     </button>
-    <button mat-raised-button (click)="cancel()" style="margin-left: 8px;">
+    <button mat-raised-button (click)="cancel()" style="margin-left: 8px;" [disabled]="loading" matTooltip="Cancelar exclusão">
       Cancelar
     </button>
   </mat-card-actions>

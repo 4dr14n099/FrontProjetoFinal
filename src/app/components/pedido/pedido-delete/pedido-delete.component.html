@@ -1,7 +1,13 @@
 <mat-card>
   <mat-card-title>Excluir Pedido</mat-card-title>
 
-  <div style="margin-top: 16px;">
+  <!-- Indicador de carregamento -->
+  <div *ngIf="loading" style="text-align: center; padding: 40px;">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p style="margin-top: 16px;">Carregando...</p>
+  </div>
+
+  <div *ngIf="!loading" style="margin-top: 16px;">
     <p>Tem certeza que deseja excluir o pedido abaixo?</p>
 
     <div style="margin-top: 24px;">
@@ -13,11 +19,11 @@
     </div>
   </div>
 
-  <div style="margin-top: 24px;">
-    <button mat-raised-button color="warn" (click)="deletePedido()">
+  <div style="margin-top: 24px;" *ngIf="!loading">
+    <button mat-raised-button color="warn" (click)="deletePedido()" [disabled]="loading" matTooltip="Excluir pedido">
       Excluir
     </button>
-    <button mat-raised-button type="button" (click)="cancel()" style="margin-left: 8px;">
+    <button mat-raised-button type="button" (click)="cancel()" style="margin-left: 8px;" [disabled]="loading" matTooltip="Cancelar exclusão">
       Cancelar
     </button>
   </div>
