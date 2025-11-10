@@ -16,6 +16,6 @@ export interface Produto {
   proDataValidade?: string | Date;
   proDataCadastro?: string | Date;
   proObservacoes?: string;
-  proAtivo: boolean;
+  proAtivo: boolean | string;
 
 }

@@ -73,15 +73,19 @@ export class ClienteReadComponent implements OnInit, AfterViewInit {
   }
 
   // Função para verificar se cliente está ativo
-  // Backend retorna cliAtivo como String ("true" ou "false")
+  // Backend retorna cliAtivo como String ("true" ou "false") ou boolean
   isAtivoCliente(cliAtivo: string | boolean | undefined | null): boolean {
     if (cliAtivo === true) {
       return true;
     }
-    if (typeof cliAtivo === 'string') {
-      // Converte para minúscula para garantir comparação correta
-      return cliAtivo.toLowerCase() === 'true';
+    if (cliAtivo === false) {
+      return false;
     }
+    if (typeof cliAtivo === 'string') {
+      // Converte para minúscula e remove espaços para garantir comparação correta
+      return cliAtivo.toLowerCase().trim() === 'true';
+    }
+    // Se for undefined, null ou qualquer outro valor, considera como inativo
     return false;
   }
 

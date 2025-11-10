@@ -58,8 +58,12 @@ export class ClienteUpdateComponent implements OnInit {
         }
         // Normalizar cliAtivo: backend retorna como String, converter para boolean para o checkbox
         if (typeof this.cliente.cliAtivo === 'string') {
-          this.cliente.cliAtivo = this.cliente.cliAtivo.toLowerCase() === 'true';
+          this.cliente.cliAtivo = this.cliente.cliAtivo.toLowerCase().trim() === 'true';
+        } else if (this.cliente.cliAtivo === undefined || this.cliente.cliAtivo === null) {
+          this.cliente.cliAtivo = false;
         }
+        // Garantir que seja boolean true ou false
+        this.cliente.cliAtivo = Boolean(this.cliente.cliAtivo);
         // Extrair dados do endereço do campo endProprietario se existir
         this.extrairEnderecoDoCliente();
       });
@@ -433,7 +437,11 @@ export class ClienteUpdateComponent implements OnInit {
 
     // Salvar CPF apenas com números e data no formato do backend
     // Backend espera cliAtivo como String ("true" ou "false"), não boolean
-    const cliAtivoValue = this.cliente.cliAtivo === true || this.cliente.cliAtivo === 'true' || this.cliente.cliAtivo === 'TRUE';
+    // Garantir que o valor seja convertido corretamente, mesmo que venha como string, boolean, ou undefined
+    const cliAtivoValue = this.cliente.cliAtivo === true || 
+                         this.cliente.cliAtivo === 'true' || 
+                         this.cliente.cliAtivo === 'TRUE' ||
+                         String(this.cliente.cliAtivo).toLowerCase().trim() === 'true';
     const clienteParaEnviar = {
       ...this.cliente,
       cliCpf: cpfLimpo,

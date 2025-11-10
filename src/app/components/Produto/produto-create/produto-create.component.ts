@@ -12,18 +12,30 @@ export class ProdutoCreateComponent implements OnInit {
 
   produto: Produto = {
     proNome: '',
-    proAtivo: false
+    proAtivo: true
   }
 
   //importando productService
   constructor(private produtoService: ProdutoService,
     private router: Router) { }
   
-  ngOnInit(): void {    
+  ngOnInit(): void {
+    // Definir data de cadastro automaticamente como data atual
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    this.produto.proDataCadastro = `${ano}-${mes}-${dia}`;
   }
 
   createProduct(): void {
-    this.produtoService.create(this.produto).subscribe(() => {
+    // Garantir que proAtivo seja boolean antes de enviar
+    const produtoParaEnviar = {
+      ...this.produto,
+      proAtivo: Boolean(this.produto.proAtivo)
+    };
+    
+    this.produtoService.create(produtoParaEnviar).subscribe(() => {
       this.produtoService.showMessage('Produto criado!')
       this.router.navigate(['/fproduto'])
     })

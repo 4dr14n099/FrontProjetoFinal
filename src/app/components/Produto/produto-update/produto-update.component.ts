@@ -26,13 +26,25 @@ export class ProdutoUpdateComponent implements OnInit {
     if (proId) {
       this.produtoService.readById(proId).subscribe(produto => {
         this.produto = produto;
+        // Normalizar proAtivo: backend pode retornar como String, converter para boolean para o checkbox
+        if (typeof this.produto.proAtivo === 'string') {
+          this.produto.proAtivo = this.produto.proAtivo.toLowerCase() === 'true';
+        } else if (this.produto.proAtivo === undefined || this.produto.proAtivo === null) {
+          this.produto.proAtivo = false;
+        }
       });
     }
   }
 
   updateProduto(): void {
     if (this.produto.proId) {
-      this.produtoService.update(this.produto).subscribe(() => {
+      // Garantir que proAtivo seja boolean antes de enviar
+      const produtoParaEnviar = {
+        ...this.produto,
+        proAtivo: Boolean(this.produto.proAtivo)
+      };
+      
+      this.produtoService.update(produtoParaEnviar).subscribe(() => {
         this.produtoService.showMessage('Produto atualizado!');
         this.router.navigate(['/fproduto']);
       });

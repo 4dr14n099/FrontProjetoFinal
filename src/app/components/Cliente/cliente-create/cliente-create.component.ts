@@ -412,7 +412,11 @@ export class ClienteCreateComponent implements OnInit {
 
     // Salvar CPF apenas com números e data no formato do backend
     // Backend espera cliAtivo como String ("true" ou "false"), não boolean
-    const cliAtivoValue = this.cliente.cliAtivo === true || this.cliente.cliAtivo === 'true' || this.cliente.cliAtivo === 'TRUE';
+    // Garantir que o valor seja convertido corretamente, mesmo que venha como string, boolean, ou undefined
+    const cliAtivoValue = this.cliente.cliAtivo === true || 
+                         this.cliente.cliAtivo === 'true' || 
+                         this.cliente.cliAtivo === 'TRUE' ||
+                         String(this.cliente.cliAtivo).toLowerCase().trim() === 'true';
     const clienteParaEnviar = {
       ...this.cliente,
       cliCpf: cpfLimpo,
