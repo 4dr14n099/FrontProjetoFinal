@@ -199,22 +199,16 @@ export class PedidoUpdateComponent implements OnInit {
     }
 
     this.pedidoService.update(pedidoParaEnviar).subscribe({
-      next: (response) => {
+      next: () => {
         this.pedidoService.showMessage('Pedido atualizado com sucesso!');
         this.router.navigate(['/fpedido']);
       },
       error: (error) => {
-        console.error('Erro ao atualizar pedido:', error);
-        let errorMessage = 'Erro desconhecido ao atualizar pedido';
+        let errorMessage = 'Erro ao atualizar pedido!';
         if (error.error?.message) {
           errorMessage = error.error.message;
-        } else if (error.message) {
-          errorMessage = error.message;
         }
-        if (error.status === 0) {
-          errorMessage = 'Erro de conexão. Verifique se o backend está rodando.';
-        }
-        this.pedidoService.showMessage(`Erro: ${errorMessage}`);
+        this.pedidoService.showMessage(errorMessage);
       }
     });
   }

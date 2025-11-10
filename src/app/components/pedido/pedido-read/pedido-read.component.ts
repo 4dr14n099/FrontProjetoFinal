@@ -36,7 +36,6 @@ export class PedidoReadComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loading = true;
-    // Busca pedidos, clientes e formas de pagamento simultaneamente
     forkJoin({
       pedidos: this.pedidoService.read(),
       clientes: this.clienteService.read(),
@@ -48,19 +47,13 @@ export class PedidoReadComponent implements OnInit, AfterViewInit {
         
         // Processa cada pedido para encontrar o cliente e forma de pagamento correspondentes
         this.pedidos = pedidos.map((pedido: any) => {
-          // Tenta encontrar o ID do cliente de várias formas possíveis
+          // Tenta encontrar o ID do cliente
           let clienteId: number | null = null;
-          
-          // 1. Verifica se tem cliId diretamente no pedido
           if (pedido.cliId) {
             clienteId = pedido.cliId;
-          }
-          // 2. Verifica se tem clienteId no pedido
-          else if (pedido.clienteId) {
+          } else if (pedido.clienteId) {
             clienteId = pedido.clienteId;
-          }
-          // 3. Verifica se o objeto cliente tem ID
-          else if (pedido.cliente) {
+          } else if (pedido.cliente) {
             if (typeof pedido.cliente === 'object') {
               clienteId = pedido.cliente.cliId || pedido.cliente.clienteId || pedido.cliente.id;
             } else if (typeof pedido.cliente === 'number') {
@@ -76,38 +69,42 @@ export class PedidoReadComponent implements OnInit, AfterViewInit {
             }
           }
 
-          // Tenta encontrar o ID da forma de pagamento de várias formas possíveis
+          // Tenta encontrar o ID da forma de pagamento
           let formaPagamentoId: number | null = null;
-          
-          // 1. Verifica se tem formId diretamente no pedido
-          if (pedido.formId) {
-            formaPagamentoId = pedido.formId;
-          }
-          // 2. Verifica se tem formaPagamentoId no pedido
-          else if (pedido.formaPagamentoId) {
-            formaPagamentoId = pedido.formaPagamentoId;
-          }
-          // 3. Verifica se o objeto formaPagamento tem ID
-          else if (pedido.formaPagamento) {
+          if (pedido.formaPagamento) {
             if (typeof pedido.formaPagamento === 'object') {
-              formaPagamentoId = pedido.formaPagamento.formId || pedido.formaPagamento.formaPagamentoId || pedido.formaPagamento.id;
+              if (pedido.formaPagamento.formDescricao) {
+                // Já está completo
+              } else if (pedido.formaPagamento.formId) {
+                formaPagamentoId = pedido.formaPagamento.formId;
+              }
             } else if (typeof pedido.formaPagamento === 'number') {
               formaPagamentoId = pedido.formaPagamento;
             }
           }
           
+          if (!formaPagamentoId) {
+            if (pedido.formId) {
+              formaPagamentoId = pedido.formId;
+            } else if (pedido.formaPagamentoId) {
+              formaPagamentoId = pedido.formaPagamentoId;
+            }
+          }
+          
           // Se encontrou o ID, busca a forma de pagamento completa
           if (formaPagamentoId && this.formasPagamento.length > 0) {
-            const formaPagamentoEncontrada = this.formasPagamento.find(f => f.formId === formaPagamentoId);
-            if (formaPagamentoEncontrada) {
-              pedido.formaPagamento = formaPagamentoEncontrada;
+            if (!pedido.formaPagamento || !pedido.formaPagamento.formDescricao) {
+              const formaPagamentoEncontrada = this.formasPagamento.find(f => f.formId === formaPagamentoId);
+              if (formaPagamentoEncontrada) {
+                pedido.formaPagamento = formaPagamentoEncontrada;
+              }
             }
           }
           
           return pedido;
         });
+        
         this.dataSource.data = this.pedidos;
-        // Filtro customizado para buscar em todos os campos
         this.dataSource.filterPredicate = (data: Pedido, filter: string) => {
           const searchStr = filter.toLowerCase();
           const clienteNome = this.getClienteNome(data).toLowerCase();
@@ -153,14 +150,11 @@ export class PedidoReadComponent implements OnInit, AfterViewInit {
   }
 
   getClienteNome(pedido: any): string {
-    // Se o cliente já está completo e tem nome
     if (pedido.cliente && pedido.cliente.cliNome) {
       return pedido.cliente.cliNome;
     }
     
-    // Tenta buscar pelo ID do cliente
     let clienteId: number | null = null;
-    
     if (pedido.cliId) {
       clienteId = pedido.cliId;
     } else if (pedido.clienteId) {
@@ -184,14 +178,21 @@ export class PedidoReadComponent implements OnInit, AfterViewInit {
   }
 
   getFormaPagamentoDesc(pedido: any): string {
-    // Se a forma de pagamento já está completa e tem descrição
-    if (pedido.formaPagamento && pedido.formaPagamento.formDescricao) {
-      return pedido.formaPagamento.formDescricao;
+    if (pedido.formaPagamento) {
+      if (typeof pedido.formaPagamento === 'object') {
+        if (pedido.formaPagamento.formDescricao) {
+          return pedido.formaPagamento.formDescricao;
+        }
+        if (pedido.formaPagamento.formId) {
+          const formaPagamento = this.formasPagamento.find(f => f.formId === pedido.formaPagamento.formId);
+          if (formaPagamento && formaPagamento.formDescricao) {
+            return formaPagamento.formDescricao;
+          }
+        }
+      }
     }
     
-    // Tenta buscar pelo ID da forma de pagamento
     let formaPagamentoId: number | null = null;
-    
     if (pedido.formId) {
       formaPagamentoId = pedido.formId;
     } else if (pedido.formaPagamentoId) {

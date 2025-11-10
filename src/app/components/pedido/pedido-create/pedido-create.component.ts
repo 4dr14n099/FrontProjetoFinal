@@ -120,22 +120,16 @@ export class PedidoCreateComponent implements OnInit {
     }
 
     this.pedidoService.create(pedidoParaEnviar).subscribe({
-      next: (response) => {
+      next: () => {
         this.pedidoService.showMessage('Pedido criado com sucesso!');
         this.router.navigate(['/fpedido']);
       },
       error: (error) => {
-        console.error('Erro ao criar pedido:', error);
-        let errorMessage = 'Erro desconhecido ao salvar pedido';
+        let errorMessage = 'Erro ao criar pedido!';
         if (error.error?.message) {
           errorMessage = error.error.message;
-        } else if (error.message) {
-          errorMessage = error.message;
         }
-        if (error.status === 0) {
-          errorMessage = 'Erro de conexão. Verifique se o backend está rodando.';
-        }
-        this.pedidoService.showMessage(`Erro: ${errorMessage}`);
+        this.pedidoService.showMessage(errorMessage);
       }
     });
   }
