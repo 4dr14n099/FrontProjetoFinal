@@ -12,7 +12,6 @@ export class FormaPagamentoCreateComponent implements OnInit {
 
   
   formapagamento: FormaPagamento = {
-    formDescricao: '',
     formTipo: '',
     formPermiteTroco: false,
     formAtivo: false

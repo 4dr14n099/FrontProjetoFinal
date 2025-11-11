@@ -48,6 +48,21 @@ export class ProdutoUpdateComponent implements OnInit {
               this.produto.proDataCadastro = `${ano}-${mes}-${dia}`;
             }
           }
+          
+          // Formatar data de validade se existir (converter de yyyy-MM-dd para dd/mm/aaaa)
+          if (this.produto.proDataValidade) {
+            const dataValidadeStr = String(this.produto.proDataValidade).trim();
+            // Se estiver no formato yyyy-MM-dd, converter para dd/mm/aaaa
+            if (dataValidadeStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+              const partes = dataValidadeStr.split('-');
+              const ano = partes[0];
+              const mes = partes[1];
+              const dia = partes[2];
+              this.produto.proDataValidade = `${dia}/${mes}/${ano}`;
+            }
+            // Se já estiver no formato dd/mm/aaaa, manter
+            // Se for texto livre, manter como está
+          }
         },
         error: (error) => {
           console.error('Erro ao carregar produto:', error);
@@ -68,6 +83,14 @@ export class ProdutoUpdateComponent implements OnInit {
     if (!this.produto.proNome || this.produto.proNome.trim() === '') {
       this.produtoService.showMessage('Nome do produto é obrigatório!');
       return;
+    }
+
+    // Validar estoque atual não pode ser maior que estoque máximo
+    if (this.produto.proEstoqueAtual != null && this.produto.proEstoqueMaximo != null) {
+      if (Number(this.produto.proEstoqueAtual) > Number(this.produto.proEstoqueMaximo)) {
+        this.produtoService.showMessage('O estoque atual não pode ser maior que o estoque máximo!');
+        return;
+      }
     }
 
     // Preparar dados para envio ao backend
@@ -165,13 +188,21 @@ export class ProdutoUpdateComponent implements OnInit {
       produtoParaEnviar.proLocalizacao = this.produto.proLocalizacao.trim();
     }
 
-    // Data de validade - se for texto livre, não enviar como data
-    // Se for uma data válida no formato yyyy-MM-dd, enviar
+    // Data de validade - converter de dd/mm/aaaa para yyyy-MM-dd
     if (this.produto.proDataValidade) {
       const dataValidadeStr = String(this.produto.proDataValidade).trim();
-      // Tentar parsear como data (formato yyyy-MM-dd)
+      
+      // Se já estiver no formato yyyy-MM-dd, usar direto
       if (dataValidadeStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
         produtoParaEnviar.proDataValidade = dataValidadeStr;
+      }
+      // Se estiver no formato dd/mm/aaaa, converter para yyyy-MM-dd
+      else if (dataValidadeStr.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+        const partes = dataValidadeStr.split('/');
+        const dia = partes[0];
+        const mes = partes[1];
+        const ano = partes[2];
+        produtoParaEnviar.proDataValidade = `${ano}-${mes}-${dia}`;
       }
       // Se for texto livre, não enviar (o backend espera LocalDate ou null)
     }
@@ -204,5 +235,36 @@ export class ProdutoUpdateComponent implements OnInit {
 
   cancel(): void {
     this.router.navigate(['/fproduto']);
+  }
+
+  formatarDataValidadeInput(value: string): void {
+    // Se o valor já estiver formatado com barras, remove as barras primeiro
+    let apenasNumeros = value.replace(/\D/g, '');
+    
+    // Limita a 8 dígitos
+    if (apenasNumeros.length > 8) {
+      apenasNumeros = apenasNumeros.substring(0, 8);
+    }
+    
+    // Formata como dd/mm/aaaa
+    let valorFormatado = apenasNumeros;
+    if (apenasNumeros.length > 2) {
+      valorFormatado = apenasNumeros.substring(0, 2) + '/' + apenasNumeros.substring(2);
+    }
+    if (apenasNumeros.length > 4) {
+      valorFormatado = apenasNumeros.substring(0, 2) + '/' + apenasNumeros.substring(2, 4) + '/' + apenasNumeros.substring(4);
+    }
+    
+    // Atualiza o modelo
+    this.produto.proDataValidade = valorFormatado;
+  }
+
+  validarEstoque(): void {
+    if (this.produto.proEstoqueAtual != null && this.produto.proEstoqueMaximo != null) {
+      if (Number(this.produto.proEstoqueAtual) > Number(this.produto.proEstoqueMaximo)) {
+        // Se for maior, ajustar para o máximo
+        this.produto.proEstoqueAtual = this.produto.proEstoqueMaximo;
+      }
+    }
   }
 }

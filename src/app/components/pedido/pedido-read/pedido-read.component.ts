@@ -73,8 +73,8 @@ export class PedidoReadComponent implements OnInit, AfterViewInit {
           let formaPagamentoId: number | null = null;
           if (pedido.formaPagamento) {
             if (typeof pedido.formaPagamento === 'object') {
-              if (pedido.formaPagamento.formDescricao) {
-                // Já está completo
+              if (pedido.formaPagamento.formTipo) {
+                // Já está completo (tem tipo, que é obrigatório)
               } else if (pedido.formaPagamento.formId) {
                 formaPagamentoId = pedido.formaPagamento.formId;
               }
@@ -93,7 +93,7 @@ export class PedidoReadComponent implements OnInit, AfterViewInit {
           
           // Se encontrou o ID, busca a forma de pagamento completa
           if (formaPagamentoId && this.formasPagamento.length > 0) {
-            if (!pedido.formaPagamento || !pedido.formaPagamento.formDescricao) {
+            if (!pedido.formaPagamento || !pedido.formaPagamento.formTipo) {
               const formaPagamentoEncontrada = this.formasPagamento.find(f => f.formId === formaPagamentoId);
               if (formaPagamentoEncontrada) {
                 pedido.formaPagamento = formaPagamentoEncontrada;
@@ -108,14 +108,14 @@ export class PedidoReadComponent implements OnInit, AfterViewInit {
         this.dataSource.filterPredicate = (data: Pedido, filter: string) => {
           const searchStr = filter.toLowerCase();
           const clienteNome = this.getClienteNome(data).toLowerCase();
-          const formaPagamentoDesc = this.getFormaPagamentoDesc(data).toLowerCase();
+          const formaPagamentoTipo = this.getFormaPagamentoDesc(data).toLowerCase();
           const pedId = data.pedId?.toString() || '';
           const pedStatus = (data.pedStatus || '').toLowerCase();
           const pedValorTotal = data.pedValorTotal?.toString() || '';
           const pedData = data.pedData ? new Date(data.pedData).toLocaleDateString('pt-BR') : '';
           
           return clienteNome.includes(searchStr) ||
-                 formaPagamentoDesc.includes(searchStr) ||
+                 formaPagamentoTipo.includes(searchStr) ||
                  pedId.includes(searchStr) ||
                  pedStatus.includes(searchStr) ||
                  pedValorTotal.includes(searchStr) ||
@@ -180,13 +180,13 @@ export class PedidoReadComponent implements OnInit, AfterViewInit {
   getFormaPagamentoDesc(pedido: any): string {
     if (pedido.formaPagamento) {
       if (typeof pedido.formaPagamento === 'object') {
-        if (pedido.formaPagamento.formDescricao) {
-          return pedido.formaPagamento.formDescricao;
+        if (pedido.formaPagamento.formTipo) {
+          return pedido.formaPagamento.formTipo;
         }
         if (pedido.formaPagamento.formId) {
           const formaPagamento = this.formasPagamento.find(f => f.formId === pedido.formaPagamento.formId);
-          if (formaPagamento && formaPagamento.formDescricao) {
-            return formaPagamento.formDescricao;
+          if (formaPagamento && formaPagamento.formTipo) {
+            return formaPagamento.formTipo;
           }
         }
       }
@@ -207,8 +207,8 @@ export class PedidoReadComponent implements OnInit, AfterViewInit {
     
     if (formaPagamentoId && this.formasPagamento.length > 0) {
       const formaPagamento = this.formasPagamento.find(f => f.formId === formaPagamentoId);
-      if (formaPagamento && formaPagamento.formDescricao) {
-        return formaPagamento.formDescricao;
+      if (formaPagamento && formaPagamento.formTipo) {
+        return formaPagamento.formTipo;
       }
     }
     

@@ -26,7 +26,7 @@
       <!-- DESCRIÇÃO -->
       <ng-container matColumnDef="formDescricao">
         <th mat-header-cell *matHeaderCellDef mat-sort-header="formDescricao">DESCRIÇÃO</th>
-        <td mat-cell *matCellDef="let row">{{ row.formDescricao }}</td>
+        <td mat-cell *matCellDef="let row">{{ row.formDescricao || '-' }}</td>
       </ng-container>
   
       <!-- TIPO -->

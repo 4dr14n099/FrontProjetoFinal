@@ -11,7 +11,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class FormaPagamentoUpdateComponent implements OnInit {
 
   formapagamento: FormaPagamento = {
-    formDescricao: '',
     formTipo: '',
     formPermiteTroco: false,
     formAtivo: false

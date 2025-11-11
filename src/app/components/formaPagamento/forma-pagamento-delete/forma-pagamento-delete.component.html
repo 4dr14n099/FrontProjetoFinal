@@ -11,7 +11,7 @@
     <p>Tem certeza que deseja excluir a forma de pagamento abaixo?</p>
     
     <div style="margin: 20px 0;">
-      <p><strong>Descrição:</strong> {{ formapagamento.formDescricao }}</p>
+      <p *ngIf="formapagamento.formDescricao"><strong>Descrição:</strong> {{ formapagamento.formDescricao }}</p>
       <p><strong>Tipo:</strong> {{ formapagamento.formTipo }}</p>
       <p *ngIf="formapagamento.formTaxaPercentual"><strong>Taxa:</strong> {{ formapagamento.formTaxaPercentual }}%</p>
     </div>

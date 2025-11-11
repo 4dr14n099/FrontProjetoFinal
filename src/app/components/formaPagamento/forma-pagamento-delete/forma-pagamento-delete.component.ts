@@ -13,7 +13,6 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
 export class FormaPagamentoDeleteComponent implements OnInit {
 
   formapagamento: FormaPagamento = {
-    formDescricao: '',
     formTipo: '',
     formPermiteTroco: false,
     formAtivo: false
@@ -50,7 +49,7 @@ export class FormaPagamentoDeleteComponent implements OnInit {
       width: '400px',
       data: {
         title: 'Confirmar Exclusão',
-        message: `Deseja realmente excluir a forma de pagamento ${this.formapagamento.formDescricao}?`,
+        message: `Deseja realmente excluir a forma de pagamento ${this.formapagamento.formDescricao || this.formapagamento.formTipo}?`,
         confirmText: 'Excluir',
         cancelText: 'Cancelar'
       }

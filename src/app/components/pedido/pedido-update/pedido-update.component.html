@@ -34,7 +34,7 @@
         <mat-select [(ngModel)]="pedido.formaPagamento" name="formaPagamento">
           <mat-option [value]="null">Selecione uma forma de pagamento</mat-option>
           <mat-option *ngFor="let formaPagamento of formasPagamento" [value]="formaPagamento">
-            {{ formaPagamento.formDescricao }} - {{ formaPagamento.formTipo }}
+            {{ formaPagamento.formDescricao ? (formaPagamento.formDescricao + ' - ') : '' }}{{ formaPagamento.formTipo }}
           </mat-option>
         </mat-select>
         <mat-hint *ngIf="pedido.formaPagamento && pedido.formaPagamento.formDescricao">

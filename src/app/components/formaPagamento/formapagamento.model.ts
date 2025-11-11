@@ -1,6 +1,6 @@
 export interface FormaPagamento {
   formId?: number;
-  formDescricao: string;
+  formDescricao?: string;
   formTipo: string;
   formNumeroParcelas?: number;
   formDiasEntreParcelas?: number;
